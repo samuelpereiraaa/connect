@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect - Entrar</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .bg-login {
+        background-image: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)),
+        url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1474&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .card-login {
+        width: 100%;
+        max-width: 420px;
+        border-radius: 16px;
+        border: none;
+        background-color: rgba(248,249,250,.95);
+    }
+
+    .input-group-custom {
+        position: relative;
+    }
+
+    .input-group-custom i.form-icon-left {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        z-index: 5;
+    }
+
+    .input-group-custom .form-control {
+        padding-left: 38px;
+    }
+
+    .btn-success-custom {
+        background-color: #15803d;
+        border-color: #15803d;
+        font-weight: 500;
+    }
+
+    .btn-success-custom:hover {
+        background-color: #166534;
+        border-color: #166534;
+    }
+
+    .text-green-link {
+        color: #15803d;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .text-green-link:hover {
+        text-decoration: underline;
+    }
+
+    .sub-logo-text {
+        font-size: .75rem;
+        letter-spacing: 1px;
+        opacity: .8;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="bg-login">
+
+    <div class="text-center text-white mb-4">
+        <div class="d-flex align-items-center justify-content-center mb-1">
+            <i class="bi bi-recycle fs-2 me-2"></i>
+            <span class="fw-bold fs-1">CONNECT</span>
+        </div>
+        <p class="sub-logo-text text-uppercase text-white-50 m-0">
+            Sistema de Incentivo à Reciclagem
+        </p>
+    </div>
+
+    <div class="card card-login p-4 p-sm-5 shadow-lg">
+
+        <div class="text-center mb-4">
+            <h4 class="fw-bold text-dark mb-1">Bem-vindo de volta</h4>
+            <p class="text-muted small">Entre na sua conta para continuar</p>
+        </div>
+
+        <!-- ENVIA PARA O CONTROLLER -->
+        <form action="/entrar" method="post">
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-secondary">
+                    E-mail
+                </label>
+
+                <div class="input-group-custom">
+                    <i class="bi bi-envelope form-icon-left"></i>
+
+                    <input
+                        type="email"
+                        name="email"
+                        class="form-control form-control-lg"
+                        placeholder="Digite seu email"
+                        required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-secondary">
+                    Senha
+                </label>
+
+                <div class="input-group-custom">
+                    <i class="bi bi-lock form-icon-left"></i>
+
+                    <input
+                        type="password"
+                        name="senha"
+                        class="form-control form-control-lg"
+                        placeholder="Digite sua senha"
+                        required>
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-success btn-success-custom btn-lg w-100 rounded-3 mb-4">
+                Entrar
+            </button>
+
+            <div class="text-center">
+                <a th:href="@{/registro}" class="text-green-link">
+                    Registrar-se
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

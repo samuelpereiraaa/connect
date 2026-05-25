@@ -1,0 +1,504 @@
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect - Recicle, pontue e transforme sua cidade</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --connect-green: #00B26D;
+            --connect-green-hover: #00965C;
+            --connect-green-light: #E6F7F0;
+            --connect-dark: #111827;
+            --connect-muted: #6B7280;
+            --connect-bg-light: #F9FAFB;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--connect-dark);
+            background-color: #FFFFFF;
+            overflow-x: hidden;
+        }
+
+      
+        .navbar {
+            padding: 1.25rem 0;
+            background-color: #FFFFFF !important;
+        }
+        .navbar-brand img {
+            height: 32px;
+        }
+        .nav-link {
+            color: var(--connect-muted) !important;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0 1rem !important;
+            transition: color 0.2s ease;
+        }
+        .nav-link:hover {
+            color: var(--connect-green) !important;
+        }
+        .btn-login {
+            color: var(--connect-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            margin-right: 1.5rem;
+        }
+        .btn-register {
+            background-color: var(--connect-green);
+            color: #FFFFFF;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+        .btn-register:hover {
+            background-color: var(--connect-green-hover);
+            color: #FFFFFF;
+        }
+
+        
+        .hero-section {
+            padding: 5rem 0 6rem 0;
+        }
+        .badge-sustainability {
+            background-color: var(--connect-green-light);
+            color: var(--connect-green);
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+        .hero-title .highlight {
+            color: var(--connect-green);
+        }
+        .hero-text {
+            color: var(--connect-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 540px;
+        }
+        .btn-connect-primary {
+            background-color: var(--connect-green);
+            color: #FFFFFF;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            transition: background-color 0.2s ease;
+        }
+        .btn-connect-primary:hover {
+            background-color: var(--connect-green-hover);
+            color: #FFFFFF;
+        }
+        .btn-connect-outline {
+            background-color: transparent;
+            color: var(--connect-dark);
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .btn-connect-outline:hover {
+            background-color: #F3F4F6;
+            border-color: #D1D5DB;
+        }
+        .hero-stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--connect-dark);
+            margin-bottom: 0.1rem;
+        }
+        .hero-stat-label {
+            color: var(--connect-muted);
+            font-size: 0.85rem;
+        }
+        .hero-image-container {
+            position: relative;
+        }
+        .hero-image-container img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .features-section {
+            background-color: var(--connect-bg-light);
+            padding: 6rem 0;
+        }
+        .section-tagline {
+            color: var(--connect-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background-color: #FFFFFF;
+            border: 1px solid #F3F4F6;
+            border-radius: 16px;
+            padding: 2.25rem;
+            height: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+        .feature-icon-box {
+            width: 44px;
+            height: 44px;
+            background-color: var(--connect-green-light);
+            color: var(--connect-green);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        .feature-card p {
+            color: var(--connect-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+
+       
+        .how-it-works-section {
+            padding: 6rem 0;
+            background-color: #FFFFFF;
+        }
+        .step-card {
+            background-color: #FFFFFF;
+            border: 1px solid #F3F4F6;
+            border-radius: 12px;
+            padding: 2rem;
+            height: 100%;
+        }
+        .step-number {
+            color: var(--connect-green);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .step-card h4 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .step-card p {
+            color: var(--connect-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+
+        /* Banner Green Stats */
+        .green-stats-banner {
+            background-color: var(--connect-green);
+            color: #FFFFFF;
+            padding: 4rem 0;
+        }
+        .banner-stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+        .banner-stat-label {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #FFFFFF;
+            padding: 2rem 0;
+            border-top: 1px solid #F3F4F6;
+            font-size: 0.875rem;
+            color: var(--connect-muted);
+        }
+        footer a {
+            color: var(--connect-muted);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: color 0.2s ease;
+        }
+        footer a:hover {
+            color: var(--connect-green);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top bg-white">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-dark fs-4" href="#">
+                <span class="text-success" style="font-weight: 800;"><i class="bi bi-recycle"></i> Connect</span>
+            </a>
+            <button class="navbar-expand-lg navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#beneficios">Benefícios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#como-funciona">Como funciona</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#impacto">Impacto</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <a href="/login" class="btn-login">Entrar</a>
+                    <a href="/registro" class="btn btn-register">Cadastrar-se</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center gy-5">
+                <div class="col-lg-6 order-2 order-lg-1">
+                    <div class="mb-3">
+                        <span class="badge-sustainability">
+                            <i class="bi bi-leaf-fill"></i> Sustentabilidade que recompensa
+                        </span>
+                    </div>
+                    <h1 class="hero-title mb-3">
+                        Recicle, pontue e <br><span class="highlight">transforme</span> sua cidade.
+                    </h1>
+                    <p class="hero-text mb-4">
+                        Connect é o sistema que conecta cidadãos, catadores e cooperativas em um ecossistema de incentivo à reciclagem com pontos, recompensas e relatórios de impacto.
+                    </p>
+                    
+                    <div class="d-flex flex-wrap gap-3 mb-5">
+                        <a href="/registro" class="btn btn-connect-primary">
+                            Começar agora <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="#" class="btn btn-connect-outline">
+                            Ver demonstração
+                        </a>
+                    </div>
+
+                    <div class="row pt-2 border-top border-light-subtle">
+                        <div class="col-4">
+                            <div class="hero-stat-number">+12.540</div>
+                            <div class="hero-stat-label">kg reciclados</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="hero-stat-number">3.420</div>
+                            <div class="hero-stat-label">usuários ativos</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="hero-stat-number">186</div>
+                            <div class="hero-stat-label">pontos de coleta</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 order-1 order-lg-2">
+                    <div class="hero-image-container ps-lg-4">
+                        <svg viewBox="0 0 500 380" xmlns="http://www.w3.org/2000/svg" class="img-fluid rounded-4 shadow-lg bg-light border border-light-subtle">
+                            <defs>
+                                <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#E0F2FE;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#F0FDF4;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#sky)" />
+                            <rect x="80" y="140" width="60" height="240" fill="#E5E7EB" rx="4" />
+                            <rect x="160" y="100" width="80" height="280" fill="#D1D5DB" rx="4" />
+                            <rect x="260" y="160" width="70" height="220" fill="#E5E7EB" rx="4" />
+                            <rect x="350" y="120" width="70" height="260" fill="#D1D5DB" rx="4" />
+                            <ellipse cx="250" cy="380" rx="350" ry="80" fill="#22C55E" opacity="0.8"/>
+                            <ellipse cx="200" cy="390" rx="400" ry="70" fill="#16A34A"/>
+                            <circle cx="110" cy="220" r="30" fill="#15803D" />
+                            <rect x="106" y="240" width="8" height="60" fill="#78350F" />
+                            <circle cx="390" cy="240" r="35" fill="#166534" />
+                            <rect x="386" y="260" width="8" height="60" fill="#78350F" />
+                            <circle cx="250" cy="260" r="45" fill="#15803D" />
+                            <rect x="245" y="290" width="10" height="40" fill="#78350F" />
+                            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="'Inter', sans-serif" font-weight="700" font-size="22" fill="#15803D" opacity="0.85">Connect Ecossistema</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section" id="beneficios">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold fs-1 mb-3">Tudo o que você precisa para reciclar com propósito</h2>
+                <p class="section-tagline lead">Uma plataforma completa para usuários, catadores e administradores.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-box">
+                            <i class="bi bi-qr-code-scan"></i>
+                        </div>
+                        <h3>Registro de reciclagem</h3>
+                        <p>Validação por QR Code, histórico completo e rastreabilidade do material.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-box">
+                            <i class="bi bi-trophy"></i>
+                        </div>
+                        <h3>Pontos & recompensas</h3>
+                        <p>Acumule pontos a cada coleta validada e troque por benefícios reais.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-box">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+                        <h3>Pontos de coleta</h3>
+                        <p>Encontre pontos próximos com mapa, horários e materiais aceitos.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-box">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h3>Rede de catadores</h3>
+                        <p>Catadores e cooperativas validam coletas direto pelo app.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-box">
+                            <i class="bi bi-bar-chart-line"></i>
+                        </div>
+                        <h3>Relatórios e impacto</h3>
+                        <p>Acompanhe seu impacto e o da sua cidade em tempo real.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-box">
+                            <i class="bi bi-chat-heart"></i>
+                        </div>
+                        <h3>Comunidade verde</h3>
+                        <p>Ranking sustentável e desafios para engajar a comunidade.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works-section" id="como-funciona">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold fs-1">Como funciona</h2>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="step-card">
+                        <span class="step-number">01</span>
+                        <h4>Cadastre-se</h4>
+                        <p>Crie sua conta gratuita em segundos.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="step-card">
+                        <span class="step-number">02</span>
+                        <h4>Recicle</h4>
+                        <p>Leve materiais a um ponto de coleta parceiro.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="step-card">
+                        <span class="step-number">03</span>
+                        <h4>Valide</h4>
+                        <p>O catador valida sua coleta via QR Code.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="step-card">
+                        <span class="step-number">04</span>
+                        <h4>Resgate</h4>
+                        <p>Troque pontos por recompensas exclusivas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="green-stats-banner" id="impacto">
+        <div class="container">
+            <div class="row text-center gy-4">
+                <div class="col-6 col-lg-3">
+                    <div class="banner-stat-number">+12.540 kg</div>
+                    <div class="banner-stat-label">material reciclado</div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="banner-stat-number">48 ton</div>
+                    <div class="banner-stat-label">CO₂ evitado</div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="banner-stat-number">3.420</div>
+                    <div class="banner-stat-label">usuários ativos</div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="banner-stat-number">186</div>
+                    <div class="banner-stat-label">pontos parceiros</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <div>
+                    <span class="text-success fw-semibold"><i class="bi bi-recycle"></i> Connect</span> — © 2026 Connect — Reciclagem com propósito.
+                </div>
+                <div class="d-flex">
+                    <a href="#">Privacidade</a>
+                    <a href="#">Termos</a>
+                    <a href="#">Contato</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
