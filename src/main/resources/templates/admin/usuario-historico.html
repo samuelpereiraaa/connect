@@ -1,99 +1,82 @@
-<!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Histórico do Usuário - Connect</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --connect-green: #00B26D;
-            --connect-green-light: #E6F7F0;
-            --connect-dark: #111827;
-            --connect-muted: #6B7280;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: #F9FAFB; color: var(--connect-dark); }
-        .navbar { background-color: #fff; border-bottom: 1px solid #E5E7EB; padding: 1rem 0; }
-        .navbar-brand { font-weight: 700; color: var(--connect-green) !important; font-size: 1.3rem; }
-        .card { border: 1px solid #E5E7EB; border-radius: 12px; }
-        .card-header { background-color: #fff; border-bottom: 1px solid #E5E7EB; border-radius: 12px 12px 0 0 !important; padding: 1.25rem 1.5rem; }
-        .table th { font-size: 0.8rem; font-weight: 600; color: var(--connect-muted); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #E5E7EB; }
-        .table td { vertical-align: middle; font-size: 0.9rem; }
-        .tag-campo { background-color: #EEF2FF; color: #3730A3; font-size: .78rem; font-weight: 600; border-radius: 6px; padding: .2rem .55rem; }
-        .valor-anterior { color: #991B1B; text-decoration: line-through; font-size: .85rem; }
-        .valor-novo { color: #065F46; font-weight: 600; font-size: .85rem; }
-    </style>
-</head>
-<body>
-
-<nav class="navbar">
-    <div class="container">
-        <span class="navbar-brand"><i class="bi bi-recycle me-2"></i>Connect Admin</span>
-        <a href="/admin/usuarios" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i>Voltar
-        </a>
-    </div>
-</nav>
-
-<div class="container py-4">
-
-    <div class="mb-4">
-        <h4 class="fw-700 mb-0">Histórico de Alterações</h4>
-        <p class="text-muted mb-0" style="font-size:.9rem">
-            RF02 — Auditoria · Usuário: <strong th:text="${usuario.nome}"></strong>
-            (ID <span th:text="${usuario.idUsuario}"></span>)
-        </p>
-    </div>
-
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span class="fw-600">Registro de alterações</span>
-            <span class="badge bg-light text-dark" th:text="${#lists.size(historico)} + ' registros'"></span>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th class="ps-4">Data / Hora</th>
-                            <th>Campo</th>
-                            <th>Valor anterior</th>
-                            <th>Novo valor</th>
-                            <th>Responsável</th>
-                            <th class="pe-4">Descrição</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:if="${#lists.isEmpty(historico)}">
-                            <td colspan="6" class="text-center text-muted py-4">
-                                <i class="bi bi-clock-history me-1"></i>Nenhuma alteração registrada.
-                            </td>
-                        </tr>
-                        <tr th:each="h : ${historico}">
-                            <td class="ps-4 text-muted" style="white-space:nowrap"
-                                th:text="${#temporals.format(h.dataAcao, 'dd/MM/yyyy HH:mm')}"></td>
-                            <td>
-                                <span class="tag-campo" th:text="${h.campoAlterado}"></span>
-                            </td>
-                            <td>
-                                <span class="valor-anterior" th:text="${h.valorAnterior}"></span>
-                            </td>
-                            <td>
-                                <span class="valor-novo" th:text="${h.valorNovo}"></span>
-                            </td>
-                            <td th:text="${h.responsavel.nome}"></td>
-                            <td class="pe-4 text-muted" th:text="${h.descricao}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+	<!DOCTYPE html>
+	<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>Histórico do Usuário - Connect</title>
+		<link rel="stylesheet" th:href="@{/css/dashboard.css}">
+	    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+	    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	</head>
+	<body>
+	
+	<nav class="navbar">
+	    <div class="container">
+	        <span class="navbar-brand"><i class="bi bi-recycle me-2"></i>Connect Admin</span>
+	        <a href="/admin/usuarios" class="btn btn-sm btn-outline-secondary">
+	            <i class="bi bi-arrow-left me-1"></i>Voltar
+	        </a>
+	    </div>
+	</nav>
+	
+	<div class="container py-4">
+	
+	    <div class="mb-4">
+	        <h4 class="fw-700 mb-0">Histórico de Alterações</h4>
+	        <p class="text-muted mb-0" style="font-size:.9rem">
+	            RF02 — Auditoria · Usuário: <strong th:text="${usuario.nome}"></strong>
+	            (ID <span th:text="${usuario.idUsuario}"></span>)
+	        </p>
+	    </div>
+	
+	    <div class="card">
+	        <div class="card-header d-flex justify-content-between align-items-center">
+	            <span class="fw-600">Registro de alterações</span>
+	            <span class="badge bg-light text-dark" th:text="${#lists.size(historico)} + ' registros'"></span>
+	        </div>
+	        <div class="card-body p-0">
+	            <div class="table-responsive">
+	                <table class="table table-hover mb-0">
+	                    <thead>
+	                        <tr>
+	                            <th class="ps-4">Data / Hora</th>
+	                            <th>Campo</th>
+	                            <th>Valor anterior</th>
+	                            <th>Novo valor</th>
+	                            <th>Responsável</th>
+	                            <th class="pe-4">Descrição</th>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                        <tr th:if="${#lists.isEmpty(historico)}">
+	                            <td colspan="6" class="text-center text-muted py-4">
+	                                <i class="bi bi-clock-history me-1"></i>Nenhuma alteração registrada.
+	                            </td>
+	                        </tr>
+	                        <tr th:each="h : ${historico}">
+	                            <td class="ps-4 text-muted" style="white-space:nowrap"
+	                                th:text="${#temporals.format(h.dataAcao, 'dd/MM/yyyy HH:mm')}"></td>
+	                            <td>
+	                                <span class="tag-campo" th:text="${h.campoAlterado}"></span>
+	                            </td>
+	                            <td>
+	                                <span class="valor-anterior" th:text="${h.valorAnterior}"></span>
+	                            </td>
+	                            <td>
+	                                <span class="valor-novo" th:text="${h.valorNovo}"></span>
+	                            </td>
+	                            <td th:text="${h.responsavel.nome}"></td>
+	                            <td class="pe-4 text-muted" th:text="${h.descricao}"></td>
+	                        </tr>
+	                    </tbody>
+	                </table>
+	            </div>
+	        </div>
+	    </div>
+	
+	</div>
+	
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+	</html>

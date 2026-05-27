@@ -1,0 +1,139 @@
+:root{
+    --green:#16a34a;
+    --green-dark:#15803d;
+    --white:#fff;
+    --gray:#64748b;
+    --border:#e5e7eb;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    background:
+        linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),
+        url('https://images.unsplash.com/photo-1492496913980-501348b61469?q=80&w=2070');
+    background-size:cover;
+    background-position:center;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.login-wrapper{
+    width:100%;
+    max-width:420px;
+    text-align:center;
+}
+
+.logo{
+    color:white;
+    font-size:3rem;
+    margin-bottom:10px;
+}
+
+.brand{
+    color:white;
+    font-weight:800;
+    font-size:2rem;
+    letter-spacing:.5px;
+}
+
+.subtitle{
+    color:rgba(255,255,255,.8);
+    font-size:.9rem;
+    margin-bottom:35px;
+}
+
+.login-card{
+    background:rgba(255,255,255,.96);
+    border-radius:18px;
+    padding:40px;
+    box-shadow:0 20px 60px rgba(0,0,0,.18);
+    text-align:left;
+}
+
+.login-title{
+    font-size:1.35rem;
+    font-weight:700;
+    text-align:center;
+    margin-bottom:6px;
+}
+
+.login-desc{
+    color:var(--gray);
+    text-align:center;
+    margin-bottom:28px;
+    font-size:.95rem;
+}
+
+.form-label{
+    font-weight:600;
+    font-size:.88rem;
+}
+
+.form-control{
+    height:52px;
+    border-radius:12px;
+    border:1px solid var(--border);
+}
+
+.form-control:focus{
+    border-color:var(--green);
+    box-shadow:0 0 0 .2rem rgba(22,163,74,.15);
+}
+
+.options{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    font-size:.85rem;
+}
+
+.options a{
+    color:var(--green);
+    text-decoration:none;
+    font-weight:600;
+}
+
+.btn-login{
+    width:100%;
+    height:52px;
+    border:none;
+    border-radius:12px;
+    background:var(--green);
+    color:white;
+    font-weight:700;
+    font-size:1rem;
+    transition:.3s;
+}
+
+.btn-login:hover{
+    background:var(--green-dark);
+}
+
+.signup{
+    text-align:center;
+    margin-top:22px;
+    font-size:.9rem;
+    color:var(--gray);
+}
+
+.signup a{
+    color:var(--green);
+    font-weight:700;
+    text-decoration:none;
+}
+
+.version{
+    color:rgba(255,255,255,.75);
+    margin-top:18px;
+    font-size:.82rem;
+    text-align:center;
+}

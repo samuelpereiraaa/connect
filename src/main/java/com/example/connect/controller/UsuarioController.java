@@ -2,10 +2,8 @@ package com.example.connect.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.connect.model.Endereco;
 import com.example.connect.model.Usuario;
@@ -14,36 +12,37 @@ import com.example.connect.service.UsuarioService;
 @Controller
 public class UsuarioController {
 
-	@Autowired
-	private UsuarioService service;
+    @Autowired
+    private UsuarioService service;
 
-	@GetMapping("/cadastro")
-	public String telaCadastro() {
-		return "cadastro";
-		
-	}
+    // tela cadastro
+    @GetMapping("/cadastro")
+    public String telaCadastro() {
+        return "cadastro";
+    }
 
-	@PostMapping("/registro")
-	public String cadastrar(
-	        @ModelAttribute Usuario usuario,
-	        @ModelAttribute Endereco endereco){
+    // salvar cadastro
+    @PostMapping("/registro")
+    public String cadastrar(
+            @ModelAttribute Usuario usuario,
+            @ModelAttribute Endereco endereco,
+            RedirectAttributes redirect) {
 
-	    service.cadastrar(usuario, endereco);
+        try {
+            service.cadastrar(usuario, endereco);
+            redirect.addFlashAttribute("mensagem", "Cadastro realizado com sucesso! Faça login.");
+        } catch (RuntimeException e) {
+            redirect.addFlashAttribute("erro", e.getMessage());
+            return "redirect:/registro";
+        }
 
-	    return "redirect:/login";
-	}
-	
-	
-	@PostMapping("/inativar/{id}")
-	public String inativar(@PathVariable Integer id){
+        return "redirect:/login";
+    }
 
-	    service.inativar(id);
-
-	    return "redirect:/usuarios";
-	}
-	
-	
-	
-	
-	
+    // inativar usuário
+    @PostMapping("/inativar/{id}")
+    public String inativar(@PathVariable Integer id) {
+        service.inativar(id);
+        return "redirect:/usuarios";
+    }
 }
