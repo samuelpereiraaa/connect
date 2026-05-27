@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.connect.model.RegistroReciclagem;
 import com.example.connect.model.StatusReciclagem;
+import com.example.connect.model.Usuario;
 import com.example.connect.repository.RegistroReciclagemRepository;
 
 @Service
@@ -57,12 +58,54 @@ public class RegistroReciclagemService {
         return repository.save(registro);
     }
 
+    /**
+     * RF05 - Regra 3: atualiza o status do registro para VALIDADO ou RECUSADO.
+     * Apenas catadores e administradores podem validar.
+     * Registros já finalizados (VALIDADO/RECUSADO) não podem ser alterados novamente.
+     *
+     * @param idRegistro          ID do registro a ser validado
+     * @param novoStatus          VALIDADO ou RECUSADO
+     * @param observacao          Observação opcional do validador
+     * @param catadorValidador    Usuário (catador ou admin) que está validando
+     */
+    public RegistroReciclagem validar(Integer idRegistro,
+                                      StatusReciclagem novoStatus,
+                                      String observacao,
+                                      Usuario catadorValidador) {
+
+        if (novoStatus == StatusReciclagem.PENDENTE) {
+            throw new RuntimeException("Não é permitido retornar o status para PENDENTE.");
+        }
+
+        RegistroReciclagem registro = repository.findById(idRegistro)
+                .orElseThrow(() -> new RuntimeException("Registro não encontrado: #" + idRegistro));
+
+        // RF05 - Regra 3: impede re-validação de registros já finalizados
+        if (registro.getStatus() != StatusReciclagem.PENDENTE) {
+            throw new RuntimeException(
+                "Este registro já foi " + registro.getStatus().name().toLowerCase() +
+                " e não pode ser alterado novamente."
+            );
+        }
+
+        registro.setStatus(novoStatus);
+        registro.setDataValidacao(LocalDateTime.now());
+        registro.setCatadorValidador(catadorValidador);
+        registro.setObservacaoValidacao(observacao);
+
+        return repository.save(registro);
+    }
+
     public List<RegistroReciclagem> listarPorUsuario(Integer idUsuario) {
         return repository.findByUsuarioIdUsuarioOrderByDataRegistroDesc(idUsuario);
     }
 
     public List<RegistroReciclagem> listarTodos() {
         return repository.findAll();
+    }
+
+    public List<RegistroReciclagem> listarPendentes() {
+        return repository.findByStatus(StatusReciclagem.PENDENTE);
     }
 
     public RegistroReciclagem buscarPorId(Integer id) {

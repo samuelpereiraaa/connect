@@ -41,15 +41,25 @@
 				    </div>
 				
 				    
-				    <div th:if="${usuarioLogado != null}" class="d-flex align-items-center gap-2">
-				        <span class="fw-semibold text-dark">
-				            <i class="bi bi-person-circle me-1 text-success"></i>
-				            <span th:text="${usuarioLogado.nome}"></span>
-				        </span>
-				        <a href="/logout" class="btn btn-outline-secondary btn-sm">
-				            <i class="bi bi-box-arrow-right me-1"></i>Sair
-				        </a>
-				    </div>
+					<div th:if="${usuarioLogado != null}" class="d-flex align-items-center gap-2">
+					    <span class="fw-semibold text-dark">
+					        <i class="bi bi-person-circle me-1 text-success"></i>
+					        <span th:text="${usuarioLogado.nome}"></span>
+					    </span>
+					    <a href="/pontuacao" class="btn btn-sm"
+					       style="background:#00B26D;color:#fff;border-radius:8px;font-weight:600;">
+					        <i class="bi bi-trophy-fill me-1"></i>Meu Painel
+					    </a>
+					    <a th:if="${usuarioLogado.tipo.name() == 'CATADOR'}"
+					       href="/validacao/pendentes"
+					       class="btn btn-sm"
+					       style="background:#0D9488;color:#fff;border-radius:8px;font-weight:600;">
+					        <i class="bi bi-clipboard2-check-fill me-1"></i>Painel Catador
+					    </a>
+					    <a href="/logout" class="btn btn-outline-secondary btn-sm">
+					        <i class="bi bi-box-arrow-right me-1"></i>Sair
+					    </a>
+					</div>
 				</div>
             </div>
         </div>

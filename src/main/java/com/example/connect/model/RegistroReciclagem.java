@@ -1,12 +1,12 @@
 package com.example.connect.model;
 
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.*;
 
-/**
- * RF05 - Registro de Reciclagem
- * Regras: vinculado a usuário, ponto e catador; QR Code único; status indica situação.
- */
 @Entity
 @Table(name = "registro_reciclagem")
 public class RegistroReciclagem {
@@ -16,17 +16,14 @@ public class RegistroReciclagem {
     @Column(name = "id_registro")
     private Integer id;
 
-    /** RF05 - Regra 1: vinculado a usuário */
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
-    /** RF05 - Regra 1: vinculado a ponto */
     @ManyToOne
     @JoinColumn(name = "id_ponto", nullable = false)
     private PontoColeta ponto;
 
-    /** RF05 - Regra 1: vinculado a catador */
     @ManyToOne
     @JoinColumn(name = "id_catador", nullable = false)
     private Usuario catador;
@@ -41,14 +38,23 @@ public class RegistroReciclagem {
     @Column(name = "data_registro")
     private LocalDateTime dataRegistro;
 
-    /** RF05 - Regra 2: QR Code deve ser único */
     @Column(unique = true, nullable = false)
     private String qrCode;
 
-    /** RF05 - Regra 3: status indica situação da reciclagem */
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(columnDefinition = "status_reciclagem")
     private StatusReciclagem status;
+
+    @Column(name = "data_validacao")
+    private LocalDateTime dataValidacao;
+
+    @ManyToOne
+    @JoinColumn(name = "id_catador_validador")
+    private Usuario catadorValidador;
+
+    @Column(name = "observacao_validacao", length = 500)
+    private String observacaoValidacao;
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -76,4 +82,13 @@ public class RegistroReciclagem {
 
     public StatusReciclagem getStatus() { return status; }
     public void setStatus(StatusReciclagem status) { this.status = status; }
+
+    public LocalDateTime getDataValidacao() { return dataValidacao; }
+    public void setDataValidacao(LocalDateTime dataValidacao) { this.dataValidacao = dataValidacao; }
+
+    public Usuario getCatadorValidador() { return catadorValidador; }
+    public void setCatadorValidador(Usuario catadorValidador) { this.catadorValidador = catadorValidador; }
+
+    public String getObservacaoValidacao() { return observacaoValidacao; }
+    public void setObservacaoValidacao(String observacaoValidacao) { this.observacaoValidacao = observacaoValidacao; }
 }

@@ -1,4 +1,3 @@
-
 package com.example.connect.controller;
 
 import java.util.List;
@@ -11,13 +10,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.connect.model.PontoColeta;
 import com.example.connect.model.RegistroReciclagem;
-import com.example.connect.repository.TipoMaterialRepository;
+import com.example.connect.model.StatusReciclagem;
+import com.example.connect.model.TipoUsuario;
 import com.example.connect.model.Usuario;
 import com.example.connect.repository.PontoColetaRepository;
+import com.example.connect.repository.TipoMaterialRepository;
 import com.example.connect.repository.UsuarioRepository;
 import com.example.connect.service.RegistroReciclagemService;
 import com.example.connect.model.StatusPontoColeta;
-import com.example.connect.model.TipoUsuario;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -35,7 +35,7 @@ public class RegistroReciclagemController {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private TipoMaterialRepository tipoMaterialRepository; // <- adicione aqui
+    private TipoMaterialRepository tipoMaterialRepository;
 
     @GetMapping("/registrar")
     public String telaRegistrar(Model model, HttpSession session) {
@@ -49,17 +49,13 @@ public class RegistroReciclagemController {
         model.addAttribute("registro", new RegistroReciclagem());
         model.addAttribute("pontos", pontosAtivos);
         model.addAttribute("catadores", catadores);
-        model.addAttribute("materiais", tipoMaterialRepository.findAll()); // <- adicione aqui
+        model.addAttribute("materiais", tipoMaterialRepository.findAll());
         model.addAttribute("usuario", logado);
 
         return "reciclagem/registrar";
     }
 
-    /**
-     * RF05 - Regra 1: vinculado a usuário, ponto e catador.
-     * RF05 - Regra 2: QR Code único gerado automaticamente.
-     * RF05 - Regra 3: status PENDENTE ao criar.
-     */
+ 
     @PostMapping("/registrar")
     public String registrar(
             @ModelAttribute RegistroReciclagem registro,
@@ -83,7 +79,7 @@ public class RegistroReciclagemController {
         return "redirect:/home";
     }
 
-    /** Histórico de registros do usuário logado */
+   
     @GetMapping("/meus-registros")
     public String meusRegistros(Model model, HttpSession session) {
 
@@ -96,18 +92,57 @@ public class RegistroReciclagemController {
         return "reciclagem/meus-registros";
     }
 
-    /** Listagem admin de todos os registros */
+
     @GetMapping("/admin/lista")
-    public String listarAdmin(Model model, HttpSession session) {
+    public String listarAdmin(
+            @RequestParam(required = false) StatusReciclagem filtroStatus,
+            Model model,
+            HttpSession session) {
+
+        if (!isCatadorOuAdmin(session)) return "redirect:/home";
+
+        List<RegistroReciclagem> registros = (filtroStatus != null)
+                ? service.listarTodos().stream()
+                    .filter(r -> r.getStatus() == filtroStatus)
+                    .toList()
+                : service.listarTodos();
+
+        model.addAttribute("registros", registros);
+        model.addAttribute("statusOpcoes", StatusReciclagem.values());
+        model.addAttribute("filtroStatus", filtroStatus);
+
+        return "reciclagem/admin-lista";
+    }
+
+
+    @PostMapping("/admin/validar/{id}")
+    public String validar(
+            @PathVariable Integer id,
+            @RequestParam StatusReciclagem novoStatus,
+            @RequestParam(required = false) String observacao,
+            HttpSession session,
+            RedirectAttributes redirect) {
+
+        if (!isCatadorOuAdmin(session)) return "redirect:/home";
 
         Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
-        if (logado == null) return "redirect:/login";
-        if (logado.getTipo() != TipoUsuario.ADMINISTRADOR
-                && logado.getTipo() != TipoUsuario.CATADOR) {
-            return "redirect:/home";
+
+        try {
+            service.validar(id, novoStatus, observacao, logado);
+            String acao = novoStatus == StatusReciclagem.VALIDADO ? "validado" : "recusado";
+            redirect.addFlashAttribute("sucesso", "Registro #" + id + " " + acao + " com sucesso.");
+        } catch (RuntimeException e) {
+            redirect.addFlashAttribute("erro", e.getMessage());
         }
 
-        model.addAttribute("registros", service.listarTodos());
-        return "reciclagem/admin-lista";
+        return "redirect:/reciclagem/admin/lista";
+    }
+
+   
+    private boolean isCatadorOuAdmin(HttpSession session) {
+        Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
+        return logado != null
+                && (logado.getTipo() == TipoUsuario.ADMINISTRADOR
+                    || logado.getTipo() == TipoUsuario.CATADOR);
     }
 }

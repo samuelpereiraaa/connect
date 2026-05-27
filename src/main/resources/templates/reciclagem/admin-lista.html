@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validar Reciclagens - Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --cg: #00B26D; }
+        body { font-family: 'Inter', sans-serif; background: #F9FAFB; }
+
+        .navbar { background: #fff; border-bottom: 1px solid #E5E7EB; padding: 1rem 0; }
+        .navbar-brand { font-weight: 700; color: var(--cg) !important; font-size: 1.1rem; }
+
+        .card { border: 1px solid #E5E7EB; border-radius: 12px; }
+        .filter-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; }
+
+        .badge-PENDENTE { background: #FEF3C7; color: #92400E; font-weight: 600; }
+        .badge-VALIDADO { background: #D1FAE5; color: #065F46; font-weight: 600; }
+        .badge-RECUSADO { background: #FEE2E2; color: #991B1B; font-weight: 600; }
+
+        .btn-connect { background: var(--cg); color: #fff; font-weight: 600; border: none; }
+        .btn-connect:hover { background: #009959; color: #fff; }
+
+        th { font-size: .82rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: .03em; }
+        td { vertical-align: middle; font-size: .9rem; }
+
+        .qr-mono { font-family: monospace; font-size: .78rem; color: #6B7280; }
+
+        /* Modal de validação */
+        .modal-header { border-bottom: 1px solid #E5E7EB; }
+        .modal-footer { border-top: 1px solid #E5E7EB; }
+        .btn-validar  { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; font-weight: 600; }
+        .btn-validar:hover  { background: #A7F3D0; color: #065F46; }
+        .btn-recusar  { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; font-weight: 600; }
+        .btn-recusar:hover  { background: #FECACA; color: #991B1B; }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="container">
+        <span class="navbar-brand"><i class="bi bi-recycle me-2"></i>Connect Admin</span>
+        <a href="/home" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+    </div>
+</nav>
+
+<div class="container py-4">
+
+    <!-- Cabeçalho -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h4 class="fw-bold mb-0">Validar Reciclagens</h4>
+            <p class="text-muted mb-0" style="font-size:.9rem">RF05 — Gerencie e valide os registros de reciclagem</p>
+        </div>
+    </div>
+
+    <!-- Alertas -->
+    <div th:if="${sucesso}" class="alert alert-success d-flex align-items-center gap-2 mb-3" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${sucesso}"></span>
+    </div>
+    <div th:if="${erro}" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span th:text="${erro}"></span>
+    </div>
+
+    <!-- Filtro por status -->
+    <div class="filter-card">
+        <form method="get" action="/reciclagem/admin/lista">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold" style="font-size:.85rem">Filtrar por Status</label>
+                    <select name="filtroStatus" class="form-select">
+                        <option value="">Todos</option>
+                        <option th:each="s : ${statusOpcoes}"
+                                th:value="${s}"
+                                th:text="${s}"
+                                th:selected="${filtroStatus == s}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-connect w-100">
+                        <i class="bi bi-search me-1"></i>Filtrar
+                    </button>
+                    <a href="/reciclagem/admin/lista" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabela de registros -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Usuário</th>
+                            <th>Ponto de Coleta</th>
+                            <th>Material</th>
+                            <th>Qtd.</th>
+                            <th>Catador</th>
+                            <th>QR Code</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th class="pe-4 text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(registros)}">
+                            <td colspan="10" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-4 d-block mb-2"></i>
+                                Nenhum registro encontrado.
+                            </td>
+                        </tr>
+                        <tr th:each="r : ${registros}">
+                            <td class="ps-4 text-muted fw-semibold" th:text="'#' + ${r.id}"></td>
+                            <td th:text="${r.usuario != null ? r.usuario.nome : '—'}"></td>
+                            <td th:text="${r.ponto != null ? r.ponto.nome : '—'}"></td>
+                            <td th:text="${r.tipoMaterial != null ? r.tipoMaterial.nome : '—'}"></td>
+                            <td th:text="${r.quantidade + ' kg'}"></td>
+                            <td th:text="${r.catador != null ? r.catador.nome : '—'}"></td>
+                            <td>
+                                <span class="qr-mono"
+                                      th:text="${r.qrCode != null ? r.qrCode.substring(0,8) + '...' : '—'}"></span>
+                            </td>
+                            <td th:text="${#temporals.format(r.dataRegistro, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-2"
+                                      th:classappend="${'badge-' + r.status.name()}"
+                                      th:text="${r.status.name()}"></span>
+                            </td>
+                            <td class="pe-4 text-center">
+                                <!-- Botão de ação apenas para PENDENTE -->
+                                <button th:if="${r.status.name() == 'PENDENTE'}"
+                                        type="button"
+                                        class="btn btn-sm btn-outline-secondary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalValidar"
+                                        th:attr="
+                                            data-id=${r.id},
+                                            data-usuario=${r.usuario != null ? r.usuario.nome : '—'},
+                                            data-material=${r.tipoMaterial != null ? r.tipoMaterial.nome : '—'},
+                                            data-qtd=${r.quantidade}">
+                                    <i class="bi bi-clipboard-check me-1"></i>Avaliar
+                                </button>
+                                <!-- Informação do validador para finalizados -->
+                                <span th:if="${r.status.name() != 'PENDENTE'}"
+                                      class="text-muted"
+                                      style="font-size:.8rem"
+                                      th:text="${r.catadorValidador != null ? r.catadorValidador.nome : '—'}">
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal de Validação (RF05 - Regra 3) -->
+<div class="modal fade" id="modalValidar" tabindex="-1" aria-labelledby="modalValidarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="modalValidarLabel">
+                    <i class="bi bi-clipboard-check me-2 text-success"></i>Avaliar Registro
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form id="formValidar" method="post" th:action="@{/reciclagem/admin/validar/__${0}__}">
+                <div class="modal-body">
+
+                    <!-- Resumo do registro -->
+                    <div class="p-3 rounded mb-3" style="background:#F9FAFB; border:1px solid #E5E7EB">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <span class="text-muted" style="font-size:.8rem">Usuário</span>
+                                <p class="fw-semibold mb-0" id="modalUsuario">—</p>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted" style="font-size:.8rem">Material</span>
+                                <p class="fw-semibold mb-0" id="modalMaterial">—</p>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <span class="text-muted" style="font-size:.8rem">Quantidade</span>
+                                <p class="fw-semibold mb-0" id="modalQtd">—</p>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <span class="text-muted" style="font-size:.8rem">Registro</span>
+                                <p class="fw-semibold mb-0" id="modalId">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Observação -->
+                    <div class="mb-3">
+                        <label for="observacao" class="form-label fw-semibold" style="font-size:.9rem">
+                            Observação <span class="text-muted fw-normal">(opcional)</span>
+                        </label>
+                        <textarea id="observacao" name="observacao" class="form-control" rows="3"
+                                  placeholder="Descreva o motivo da validação ou recusa..."></textarea>
+                    </div>
+
+                    <!-- Campo oculto com o status escolhido -->
+                    <input type="hidden" name="novoStatus" id="inputNovoStatus" value="">
+
+                </div>
+
+                <div class="modal-footer gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-recusar"
+                            onclick="document.getElementById('inputNovoStatus').value='RECUSADO'">
+                        <i class="bi bi-x-circle me-1"></i>Recusar
+                    </button>
+                    <button type="submit" class="btn btn-validar"
+                            onclick="document.getElementById('inputNovoStatus').value='VALIDADO'">
+                        <i class="bi bi-check-circle me-1"></i>Validar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Preenche o modal com os dados do registro clicado
+    const modalEl = document.getElementById('modalValidar');
+    modalEl.addEventListener('show.bs.modal', function (event) {
+        const btn = event.relatedTarget;
+        const id       = btn.getAttribute('data-id');
+        const usuario  = btn.getAttribute('data-usuario');
+        const material = btn.getAttribute('data-material');
+        const qtd      = btn.getAttribute('data-qtd');
+
+        document.getElementById('modalId').textContent       = '#' + id;
+        document.getElementById('modalUsuario').textContent  = usuario;
+        document.getElementById('modalMaterial').textContent = material;
+        document.getElementById('modalQtd').textContent      = qtd + ' kg';
+
+        // Atualiza a action do form com o id correto
+        document.getElementById('formValidar').action = '/reciclagem/admin/validar/' + id;
+
+        // Limpa campos ao reabrir
+        document.getElementById('observacao').value = '';
+        document.getElementById('inputNovoStatus').value = '';
+    });
+</script>
+</body>
+</html>
