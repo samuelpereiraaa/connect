@@ -1,5 +1,7 @@
 package com.example.connect.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,22 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.connect.model.HistoricoPontuacao;
+import com.example.connect.model.NivelUsuario;
 import com.example.connect.model.Pontuacao;
 import com.example.connect.repository.HistoricoPontuacaoRepository;
 import com.example.connect.repository.PontuacaoRepository;
 
 /**
- * RF07 – Serviço de Gerenciamento de Pontuação.
- *
- * Regra 1: a pontuação é calculada automaticamente pela trigger
- *          fn_atualizar_pontuacao() no banco sempre que um registro
- *          de reciclagem é atualizado para VALIDADO.
- *
- * Regra 2: o saldo e o nível são atualizados conforme registros validados;
- *          este serviço expõe métodos de leitura para exibição na interface.
- *
- * Observação: nenhum método deste serviço insere ou altera pontos diretamente.
- *             Toda a lógica de cálculo, crédito e histórico é delegada ao banco.
+ * RF07 – Pontuação calculada automaticamente pela trigger do banco.
+ * RF08 – Consulta de pontuação: visualização de pontos, nível e histórico
+ *         com filtro por período e tipo de operação.
  */
 @Service
 public class PontuacaoService {
@@ -34,37 +29,65 @@ public class PontuacaoService {
     private HistoricoPontuacaoRepository historicoRepository;
 
     // -------------------------------------------------------------------------
-    // RF07 – Regra 1 e 2: consultar pontuação atual do usuário
+    // RF07 / RF08 – Regra 1: saldo e nível atuais do usuário
     // -------------------------------------------------------------------------
 
     /**
-     * Retorna a pontuação do usuário, ou um objeto vazio com INICIANTE/0
-     * caso ainda não exista registro (usuário sem nenhuma reciclagem validada).
+     * Retorna a pontuação do usuário.
+     * Se ainda não existir registro (nenhuma reciclagem validada),
+     * devolve um objeto transiente com INICIANTE/0 para evitar null na view.
      */
     public Pontuacao buscarPorUsuario(Integer idUsuario) {
         Optional<Pontuacao> opt = pontuacaoRepository.findByUsuarioIdUsuario(idUsuario);
-
         if (opt.isPresent()) {
             return opt.get();
         }
 
-        // Antes da primeira validação o banco ainda não criou o registro;
-        // retornamos um objeto transiente para evitar null na view.
         Pontuacao vazia = new Pontuacao();
         vazia.setPontosTotal(0);
-        vazia.setNivel(com.example.connect.model.NivelUsuario.INICIANTE);
+        vazia.setNivel(NivelUsuario.INICIANTE);
         return vazia;
     }
 
     // -------------------------------------------------------------------------
-    // RF07 – Regra 2: histórico de lançamentos (extrato)
+    // RF07 – Regra 2: histórico completo (sem filtro)
     // -------------------------------------------------------------------------
 
     /**
-     * Retorna os lançamentos de pontuação do usuário, do mais recente ao mais antigo.
-     * Cada linha representa um CREDITO (reciclagem validada) ou DEBITO (resgate aprovado).
+     * Extrato completo do usuário, do mais recente ao mais antigo.
+     * Usado na carga inicial da página antes de qualquer filtro ser aplicado.
      */
     public List<HistoricoPontuacao> buscarHistorico(Integer idUsuario) {
         return historicoRepository.findByUsuarioIdUsuarioOrderByDataOperacaoDesc(idUsuario);
+    }
+
+    // -------------------------------------------------------------------------
+    // RF08 – Regra 2: consulta histórica com filtros
+    // -------------------------------------------------------------------------
+
+    /**
+     * Retorna o histórico filtrado por período e/ou tipo de operação.
+     *
+     * @param idUsuario   ID do usuário logado
+     * @param dataInicio  Data inicial do filtro (inclusive); null = sem limite inferior
+     * @param dataFim     Data final do filtro (inclusive, até 23:59:59); null = sem limite superior
+     * @param tipo        "CREDITO", "DEBITO" ou null para ambos
+     */
+    public List<HistoricoPontuacao> consultarHistorico(
+            Integer idUsuario,
+            LocalDate dataInicio,
+            LocalDate dataFim,
+            String tipo) {
+
+        // Converte LocalDate para LocalDateTime nos extremos do dia
+        LocalDateTime inicio = (dataInicio != null) ? dataInicio.atStartOfDay()         : null;
+        LocalDateTime fim    = (dataFim    != null) ? dataFim.atTime(23, 59, 59) : null;
+
+        // Normaliza tipo: string vazia ou "TODOS" vira null → sem filtro
+        String tipoFiltro = (tipo != null && !tipo.isBlank() && !"TODOS".equals(tipo))
+                ? tipo.toUpperCase()
+                : null;
+
+        return historicoRepository.filtrarHistorico(idUsuario, inicio, fim, tipoFiltro);
     }
 }

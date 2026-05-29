@@ -48,7 +48,19 @@
 					    </span>
 					    <a href="/pontuacao" class="btn btn-sm"
 					       style="background:#00B26D;color:#fff;border-radius:8px;font-weight:600;">
-					        <i class="bi bi-trophy-fill me-1"></i>Meu Painel
+					        <i class="bi bi-trophy-fill me-1"></i>Minha Pontuação
+					    </a>
+					    <a th:if="${usuarioLogado.tipo.name() == 'USUARIO'}"
+					       href="/recompensas"
+					       class="btn btn-sm"
+					       style="background:#F59E0B;color:#fff;border-radius:8px;font-weight:600;">
+					        <i class="bi bi-gift-fill me-1"></i>Recompensas
+					    </a>
+					    <a th:if="${usuarioLogado.tipo.name() == 'ADMINISTRADOR'}"
+					       href="/admin/home"
+					       class="btn btn-sm"
+					       style="background:#7C3AED;color:#fff;border-radius:8px;font-weight:600;">
+					        <i class="bi bi-shield-lock-fill me-1"></i>Painel Admin
 					    </a>
 					    <a th:if="${usuarioLogado.tipo.name() == 'CATADOR'}"
 					       href="/validacao/pendentes"
@@ -82,11 +94,11 @@
                     </p>
                     
                     <div class="d-flex flex-wrap gap-3 mb-5">
-                        <a href="/registro" class="btn btn-connect-primary">
+                        <a href="/reciclagem/registrar" class="btn btn-connect-primary">
                             Começar agora <i class="bi bi-arrow-right"></i>
                         </a>
-                        <a href="#" class="btn btn-connect-outline">
-                            Ver demonstração
+                        <a href="/regras/registro-reciclagem" class="btn btn-connect-outline">
+                            <i class="bi bi-journal-check me-1"></i>Regra de registro
                         </a>
                     </div>
 

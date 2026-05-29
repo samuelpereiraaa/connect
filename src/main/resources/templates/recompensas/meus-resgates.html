@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Resgates - Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --cg: #00B26D; --cg-h: #00965C; --cg-l: #E6F7F0; --cd: #111827; --cm: #6B7280; }
+        body { font-family: 'Inter', sans-serif; background: #F9FAFB; color: var(--cd); }
+        .navbar { background: #fff; border-bottom: 1px solid #E5E7EB; padding: 1rem 0; }
+        .navbar-brand { font-weight: 800; color: var(--cg) !important; font-size: 1.3rem; }
+        .page-header { background: linear-gradient(135deg, #00B26D 0%, #00965C 100%); color: #fff;
+                       padding: 2.5rem 0 2rem; }
+        .page-header h1 { font-weight: 800; font-size: 2rem; }
+        .card { border: 1px solid #E5E7EB; border-radius: 14px; }
+        .card-header { background: #fff; border-bottom: 1px solid #E5E7EB;
+                       border-radius: 14px 14px 0 0 !important; padding: 1rem 1.5rem; }
+        .table thead th { font-size: .8rem; font-weight: 700; text-transform: uppercase;
+                          letter-spacing: .04em; color: var(--cm); background: #F9FAFB;
+                          border-bottom: 1px solid #E5E7EB; }
+        .table tbody td { vertical-align: middle; font-size: .9rem; }
+        .pontos-badge { background: var(--cg-l); color: var(--cg); font-weight: 700;
+                        border-radius: 999px; padding: .2rem .7rem; font-size: .8rem; }
+        .badge-SOLICITADO { background: #FEF3C7; color: #92400E; }
+        .badge-APROVADO   { background: #D1FAE5; color: #065F46; }
+        .badge-CANCELADO  { background: #F3F4F6; color: #374151; }
+        .btn-cancelar-rs { font-size: .78rem; font-weight: 600; padding: .25rem .7rem;
+                           border-radius: 8px; border: 1px solid #E5E7EB;
+                           background: #fff; color: #6B7280; }
+        .btn-cancelar-rs:hover { background: #FEE2E2; border-color: #FCA5A5; color: #B91C1C; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="/"><i class="bi bi-recycle me-2"></i>Connect</a>
+        <div class="d-flex align-items-center gap-2">
+            <a href="/recompensas" class="btn btn-sm btn-outline-success">
+                <i class="bi bi-gift me-1"></i>Recompensas
+            </a>
+            <a href="/pontuacao" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-trophy me-1"></i>Pontuação
+            </a>
+            <a href="/logout" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <a href="/" class="text-white opacity-75 text-decoration-none" style="font-size:.9rem">
+                <i class="bi bi-house me-1"></i>Início
+            </a>
+            <span class="text-white opacity-50">/</span>
+            <a href="/recompensas" class="text-white opacity-75 text-decoration-none" style="font-size:.9rem">Recompensas</a>
+            <span class="text-white opacity-50">/</span>
+            <span class="text-white" style="font-size:.9rem">Meus Resgates</span>
+        </div>
+        <h1><i class="bi bi-clock-history me-2"></i>Meus Resgates</h1>
+        <p class="mb-0">Acompanhe o status dos seus resgates. Resgates SOLICITADOS podem ser cancelados.</p>
+    </div>
+</div>
+
+<div class="container py-4">
+
+    <div th:if="${sucesso}" class="alert alert-success d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-check-circle-fill fs-5"></i>
+        <span th:text="${sucesso}"></span>
+    </div>
+    <div th:if="${erro}" class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-exclamation-circle-fill fs-5"></i>
+        <span th:text="${erro}"></span>
+    </div>
+
+    <div th:if="${#lists.isEmpty(resgates)}" class="text-center py-5 text-muted">
+        <i class="bi bi-clock-history fs-1 d-block mb-3 opacity-25"></i>
+        <p class="mb-1 fw-semibold">Nenhum resgate encontrado.</p>
+        <a href="/recompensas" class="btn btn-sm mt-2"
+           style="background:var(--cg);color:#fff;border-radius:8px;font-weight:600;">
+            <i class="bi bi-gift me-1"></i>Ver recompensas disponíveis
+        </a>
+    </div>
+
+    <div class="card" th:if="${not #lists.isEmpty(resgates)}">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Histórico de resgates
+                <span class="badge bg-light text-dark ms-1"
+                      th:text="${#lists.size(resgates)}"></span>
+            </span>
+            <a href="/recompensas" class="btn btn-sm"
+               style="background:var(--cg);color:#fff;border-radius:8px;font-weight:600;">
+                <i class="bi bi-gift me-1"></i>Ver mais recompensas
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Recompensa</th>
+                            <th>Pontos utilizados</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th class="pe-4 text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="rs : ${resgates}">
+                            <td class="ps-4 text-muted" th:text="${rs.idResgate}"></td>
+                            <td class="fw-semibold" th:text="${rs.recompensa.nome}"></td>
+                            <td>
+                                <span class="pontos-badge">
+                                    <i class="bi bi-trophy-fill me-1"></i>
+                                    <span th:text="${rs.pontosUtilizados}"></span> pts
+                                </span>
+                            </td>
+                            <td class="text-muted"
+                                th:text="${#temporals.format(rs.dataResgate, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <span class="badge rounded-pill fw-semibold px-3 py-2"
+                                      th:classappend="'badge-' + ${rs.status.name()}"
+                                      th:text="${rs.status.name()}"></span>
+                            </td>
+                            <td class="pe-4 text-center">
+                                <!-- RF10 – permite cancelar resgates SOLICITADOS -->
+                                <form th:if="${rs.status.name() == 'SOLICITADO'}"
+                                      th:action="@{/recompensas/cancelar/{id}(id=${rs.idResgate})}"
+                                      method="post"
+                                      onsubmit="return confirm('Cancelar este resgate?')">
+                                    <button type="submit" class="btn-cancelar-rs">
+                                        <i class="bi bi-x-lg me-1"></i>Cancelar
+                                    </button>
+                                </form>
+                                <span th:if="${rs.status.name() != 'SOLICITADO'}"
+                                      class="text-muted" style="font-size:.8rem">—</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="border-top py-3 mt-4" style="background:#fff;">
+    <div class="container text-center text-muted" style="font-size:.85rem">
+        <i class="bi bi-recycle text-success me-1"></i> Connect © 2026 — Reciclagem com propósito.
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

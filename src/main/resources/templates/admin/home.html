@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cg: #00B26D; --cg-h: #00965C; --cg-l: #E6F7F0;
+            --cd: #111827; --cm: #6B7280;
+            --admin: #7C3AED; --admin-l: #EDE9FE;
+        }
+        body { font-family: 'Inter', sans-serif; background: #F3F4F6; color: var(--cd); margin: 0; }
+
+        /* ── Navbar ── */
+        .navbar { background: #1F2937; padding: 1rem 0; }
+        .navbar-brand { font-weight: 800; font-size: 1.25rem; color: #fff !important; }
+        .navbar-brand span { color: var(--cg); }
+        .admin-chip { background: #F59E0B; color: #fff; font-size: .7rem;
+                      font-weight: 700; border-radius: 6px; padding: .15rem .55rem; }
+        .nav-btn { font-size: .85rem; font-weight: 600; border-radius: 8px;
+                   padding: .4rem 1rem; border: none; cursor: pointer; text-decoration: none;
+                   display: inline-flex; align-items: center; gap: .4rem; }
+        .nav-btn-ghost { background: rgba(255,255,255,.08); color: #D1D5DB; }
+        .nav-btn-ghost:hover { background: rgba(255,255,255,.16); color: #fff; }
+        .nav-btn-danger { background: transparent; color: #F87171; border: 1px solid #374151; }
+        .nav-btn-danger:hover { background: #7F1D1D22; color: #FCA5A5; }
+
+        /* ── Header ── */
+        .page-header {
+            background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+            color: #fff; padding: 2.5rem 0 2rem;
+        }
+        .page-header h1 { font-weight: 800; font-size: 2rem; margin: 0; }
+        .welcome-text { color: #9CA3AF; font-size: .95rem; margin-top: .4rem; }
+        .admin-badge-lg {
+            background: var(--admin); color: #fff;
+            border-radius: 999px; padding: .3rem 1rem;
+            font-size: .8rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: .4rem;
+        }
+
+        /* ── Cards de acesso ── */
+        .section-title {
+            font-weight: 700; font-size: .8rem; text-transform: uppercase;
+            letter-spacing: .06em; color: var(--cm); margin-bottom: 1rem;
+        }
+        .access-card {
+            background: #fff; border: 1px solid #E5E7EB; border-radius: 16px;
+            padding: 1.75rem; display: flex; flex-direction: column;
+            transition: transform .18s, box-shadow .18s, border-color .18s;
+            text-decoration: none; color: inherit; height: 100%;
+        }
+        .access-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0,0,0,.10);
+            border-color: var(--icon-color, #E5E7EB);
+            color: inherit;
+        }
+        .card-icon {
+            width: 52px; height: 52px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-bottom: 1rem; flex-shrink: 0;
+            background: var(--icon-bg); color: var(--icon-color);
+        }
+        .access-card h5 { font-weight: 700; font-size: 1rem; margin-bottom: .35rem; }
+        .access-card p  { font-size: .85rem; color: var(--cm); margin: 0; flex-grow: 1; }
+        .card-arrow {
+            margin-top: 1.25rem;
+            font-size: .82rem; font-weight: 600;
+            color: var(--icon-color);
+            display: flex; align-items: center; gap: .3rem;
+        }
+
+        /* ── Cores por módulo ── */
+        .mod-usuarios  { --icon-bg: #EDE9FE; --icon-color: #7C3AED; }
+        .mod-recompens { --icon-bg: #FEF3C7; --icon-color: #D97706; }
+        .mod-resgates  { --icon-bg: var(--cg-l); --icon-color: var(--cg); }
+        .mod-pontos    { --icon-bg: #DBEAFE; --icon-color: #2563EB; }
+        .mod-regra     { --icon-bg: #F0FDF4; --icon-color: #16A34A; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand" href="/admin/home">
+            <i class="bi bi-recycle me-2"></i><span>Connect</span>
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <span class="admin-chip"><i class="bi bi-shield-fill me-1"></i>ADMIN</span>
+            <span class="text-secondary d-none d-md-inline" style="font-size:.85rem; color:#9CA3AF !important;"
+                  th:text="${usuarioLogado.nome}"></span>
+            <a href="/logout" class="nav-btn nav-btn-danger">
+                <i class="bi bi-box-arrow-right"></i>Sair
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="mb-2">
+            <span class="admin-badge-lg"><i class="bi bi-shield-lock-fill"></i>Painel Administrativo</span>
+        </div>
+        <h1>Olá, <span th:text="${usuarioLogado.nome.split(' ')[0]}"></span> 👋</h1>
+        <p class="welcome-text mb-0">Gerencie usuários, recompensas, resgates e pontos de coleta do Connect.</p>
+    </div>
+</div>
+
+<div class="container py-4">
+
+    <!-- Gestão -->
+    <p class="section-title">Gestão</p>
+    <div class="row g-3 mb-4">
+
+        <div class="col-sm-6 col-lg-3">
+            <a href="/admin/usuarios" class="access-card mod-usuarios">
+                <div class="card-icon"><i class="bi bi-people-fill"></i></div>
+                <h5>Gestão de Usuários</h5>
+                <p>Consulte, edite e gerencie status e tipos de usuários cadastrados.</p>
+                <div class="card-arrow">Acessar <i class="bi bi-arrow-right"></i></div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <a href="/admin/recompensas" class="access-card mod-recompens">
+                <div class="card-icon"><i class="bi bi-gift-fill"></i></div>
+                <h5>Recompensas</h5>
+                <p>Cadastre, edite e controle status e estoque das recompensas disponíveis.</p>
+                <div class="card-arrow">Acessar <i class="bi bi-arrow-right"></i></div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <a href="/admin/resgates" class="access-card mod-resgates">
+                <div class="card-icon"><i class="bi bi-bag-check-fill"></i></div>
+                <h5>Resgates</h5>
+                <p>Aprove ou cancele solicitações de resgate e acompanhe o débito de pontos.</p>
+                <div class="card-arrow">Acessar <i class="bi bi-arrow-right"></i></div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <a href="/admin/pontos" class="access-card mod-pontos">
+                <div class="card-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                <h5>Pontos de Coleta</h5>
+                <p>Gerencie os pontos de coleta parceiros, materiais aceitos e horários.</p>
+                <div class="card-arrow">Acessar <i class="bi bi-arrow-right"></i></div>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Documentação / Regras -->
+    <p class="section-title">Referência do sistema</p>
+    <div class="row g-3">
+        <div class="col-sm-6 col-lg-4">
+            <a href="/regras/registro-reciclagem" class="access-card mod-regra">
+                <div class="card-icon"><i class="bi bi-journal-text"></i></div>
+                <h5>Regra de Registro</h5>
+                <p>Consulte a regra que define que todo registro deve estar vinculado a usuário, ponto e catador.</p>
+                <div class="card-arrow">Ver regra <i class="bi bi-arrow-right"></i></div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<footer class="border-top py-3 mt-4" style="background:#fff;">
+    <div class="container text-center text-muted" style="font-size:.85rem">
+        <i class="bi bi-recycle text-success me-1"></i> Connect © 2026 — Reciclagem com propósito.
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -25,6 +25,12 @@
         /* ---- badges de operação ---- */
         .badge-CREDITO { background: #D1FAE5; color: #065F46; }
         .badge-DEBITO  { background: #FEE2E2; color: #991B1B; }
+
+        /* ---- filtro ---- */
+        .filter-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.25rem 1.5rem; }
+        .btn-filtrar { background: #00B26D; color: #fff; font-weight: 600; border: none; border-radius: 8px; }
+        .btn-filtrar:hover { background: #009a5e; color: #fff; }
+        .btn-limpar { border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -44,16 +50,15 @@
     <!-- Cabeçalho -->
     <div class="mb-4">
         <h4 class="fw-bold mb-0">Minha Pontuação</h4>
-        <p class="text-muted mb-0" style="font-size:.9rem">RF07 — Saldo, nível e histórico de pontos</p>
+        <!-- RF08 – Regra 1 e 2 -->
+        <p class="text-muted mb-0" style="font-size:.9rem">RF08 — Consulta de pontos, nível e histórico</p>
     </div>
 
-    <!-- Cartão de nível + saldo -->
+    <!-- =====================================================================
+         RF08 – Regra 1: saldo atual e nível
+         ===================================================================== -->
     <div class="row g-4 mb-4">
         <div class="col-md-5">
-            <!--
-                th:classappend usa o nome do enum (ex.: OURO) para aplicar
-                a classe de gradiente correspondente definida no CSS acima.
-            -->
             <div class="nivel-card h-100"
                  th:classappend="${'nivel-' + (pontuacao.nivel != null ? pontuacao.nivel.name() : 'INICIANTE')}">
                 <div class="d-flex align-items-center gap-3 mb-3">
@@ -69,8 +74,6 @@
                 <div class="fw-bold" style="font-size:2.5rem"
                      th:text="${pontuacao.pontosTotal != null ? pontuacao.pontosTotal : 0}">0</div>
                 <div style="font-size:.9rem;opacity:.85">pontos acumulados</div>
-
-                <!-- Data da última atualização (só exibe se existir registro no banco) -->
                 <div th:if="${pontuacao.dataAtualizacao != null}"
                      class="mt-3" style="font-size:.8rem;opacity:.75">
                     Última atualização:
@@ -79,25 +82,38 @@
             </div>
         </div>
 
-        <!-- Faixas de nível (informativo) -->
+        <!-- Faixas de nível -->
         <div class="col-md-7">
             <div class="card h-100">
                 <div class="card-body">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-steps me-2 text-success"></i>Faixas de Nível</h6>
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-bar-chart-steps me-2 text-success"></i>Faixas de Nível
+                    </h6>
                     <table class="table table-sm mb-0">
                         <thead>
-                            <tr>
-                                <th>Nível</th>
-                                <th>Pontos mínimos</th>
-                                <th>Pontos máximos</th>
-                            </tr>
+                            <tr><th>Nível</th><th>Mínimo</th><th>Máximo</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td><span class="badge rounded-pill px-3" style="background:#6B7280;color:#fff">INICIANTE</span></td><td>0</td><td>249</td></tr>
-                            <tr><td><span class="badge rounded-pill px-3" style="background:#D97706;color:#fff">BRONZE</span></td><td>250</td><td>499</td></tr>
-                            <tr><td><span class="badge rounded-pill px-3" style="background:#6B7280;color:#fff">PRATA</span></td><td>500</td><td>1099</td></tr>
-                            <tr><td><span class="badge rounded-pill px-3" style="background:#F59E0B;color:#fff">OURO</span></td><td>1100</td><td>2499</td></tr>
-                            <tr><td><span class="badge rounded-pill px-3" style="background:#7C3AED;color:#fff">PLATINA</span></td><td>2500</td><td>—</td></tr>
+                            <tr>
+                                <td><span class="badge rounded-pill px-3" style="background:#6B7280;color:#fff">INICIANTE</span></td>
+                                <td>0</td><td>249</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge rounded-pill px-3" style="background:#D97706;color:#fff">BRONZE</span></td>
+                                <td>250</td><td>499</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge rounded-pill px-3" style="background:#6B7280;color:#fff">PRATA</span></td>
+                                <td>500</td><td>1099</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge rounded-pill px-3" style="background:#F59E0B;color:#fff">OURO</span></td>
+                                <td>1100</td><td>2499</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge rounded-pill px-3" style="background:#7C3AED;color:#fff">PLATINA</span></td>
+                                <td>2500</td><td>—</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -105,13 +121,72 @@
         </div>
     </div>
 
-    <!-- Histórico de lançamentos -->
+    <!-- =====================================================================
+         RF08 – Regra 2: filtro de consulta histórica
+         ===================================================================== -->
+    <div class="filter-card mb-3">
+        <h6 class="fw-bold mb-3">
+            <i class="bi bi-funnel me-2 text-success"></i>Filtrar Histórico
+        </h6>
+        <form method="get" th:action="@{/pontuacao/historico}" class="row g-3 align-items-end">
+
+            <!-- Data início -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold" style="font-size:.875rem">Data início</label>
+                <input type="date" name="dataInicio" class="form-control"
+                       th:value="${dataInicio}">
+            </div>
+
+            <!-- Data fim -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold" style="font-size:.875rem">Data fim</label>
+                <input type="date" name="dataFim" class="form-control"
+                       th:value="${dataFim}">
+            </div>
+
+            <!-- Tipo de operação -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold" style="font-size:.875rem">Tipo</label>
+                <select name="tipo" class="form-select">
+                    <option value="TODOS"   th:selected="${tipo == 'TODOS'   || tipo == null}">Todos</option>
+                    <option value="CREDITO" th:selected="${tipo == 'CREDITO'}">Crédito</option>
+                    <option value="DEBITO"  th:selected="${tipo == 'DEBITO'}">Débito</option>
+                </select>
+            </div>
+
+            <!-- Botões -->
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-filtrar flex-grow-1">
+                    <i class="bi bi-search me-1"></i>Filtrar
+                </button>
+                <a href="/pontuacao" class="btn btn-outline-secondary btn-limpar">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Contador de resultados quando filtro está ativo -->
+    <div th:if="${dataInicio != null || dataFim != null || (tipo != null && tipo != 'TODOS')}"
+         class="mb-3">
+        <small class="text-muted">
+            <i class="bi bi-info-circle me-1"></i>
+            <span th:text="${#lists.size(historico)}">0</span> registro(s) encontrado(s) com os filtros aplicados.
+        </small>
+    </div>
+
+    <!-- =====================================================================
+         RF08 – Regra 2: tabela do histórico
+         ===================================================================== -->
     <div class="card">
         <div class="card-body p-0">
-            <div class="px-4 py-3 border-bottom">
+            <div class="px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
                 <h6 class="fw-bold mb-0">
                     <i class="bi bi-clock-history me-2 text-success"></i>Histórico de Lançamentos
                 </h6>
+                <small class="text-muted"
+                       th:text="${#lists.size(historico) + ' lançamento(s)'}"></small>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
@@ -127,8 +202,9 @@
                     </thead>
                     <tbody>
                         <tr th:if="${#lists.isEmpty(historico)}">
-                            <td colspan="6" class="text-center text-muted py-4">
-                                Nenhum lançamento registrado ainda.
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                Nenhum lançamento encontrado para os filtros selecionados.
                             </td>
                         </tr>
                         <tr th:each="h : ${historico}">
@@ -138,7 +214,6 @@
                                       th:text="${h.tipoOperacao}"></span>
                             </td>
                             <td>
-                                <!-- Crédito: verde com +; débito: vermelho com - -->
                                 <span th:if="${h.tipoOperacao == 'CREDITO'}"
                                       class="fw-semibold text-success"
                                       th:text="${'+' + h.pontos}"></span>

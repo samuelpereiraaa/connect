@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recompensas - Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --cg: #00B26D; --cg-h: #00965C; --cg-l: #E6F7F0; --cd: #111827; --cm: #6B7280; }
+        body { font-family: 'Inter', sans-serif; background: #F9FAFB; color: var(--cd); }
+        .navbar { background: #fff; border-bottom: 1px solid #E5E7EB; padding: 1rem 0; }
+        .navbar-brand { font-weight: 800; color: var(--cg) !important; font-size: 1.3rem; }
+        .page-header { background: linear-gradient(135deg, #00B26D 0%, #00965C 100%); color: #fff; padding: 2.5rem 0 2rem; }
+        .page-header h1 { font-weight: 800; font-size: 2rem; }
+        .saldo-chip { background: rgba(255,255,255,.2); border-radius: 999px;
+                      padding: .35rem 1rem; font-size: .9rem; font-weight: 600;
+                      display: inline-flex; align-items: center; gap: .4rem; }
+        .reward-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 16px;
+                       transition: transform .18s, box-shadow .18s; height: 100%; }
+        .reward-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,178,109,.13); border-color: var(--cg); }
+        .reward-card.sem-pontos { opacity: .75; }
+        .reward-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--cg-l);
+                       display: flex; align-items: center; justify-content: center;
+                       font-size: 1.5rem; color: var(--cg); flex-shrink: 0; }
+        .pontos-badge { background: var(--cg-l); color: var(--cg); font-weight: 700;
+                        border-radius: 999px; padding: .25rem .85rem; font-size: .82rem; }
+        .pontos-badge.insuficiente { background: #FEE2E2; color: #B91C1C; }
+        .tipo-badge { background: #F3F4F6; color: #374151; font-weight: 600;
+                      border-radius: 999px; padding: .25rem .75rem; font-size: .78rem; }
+        .estoque-text { font-size: .8rem; color: var(--cm); }
+        .btn-resgatar { background: var(--cg); color: #fff; font-weight: 600; border: none;
+                        border-radius: 10px; padding: .55rem 1.2rem; font-size: .9rem; width: 100%; }
+        .btn-resgatar:hover:not(:disabled) { background: var(--cg-h); color: #fff; }
+        .btn-resgatar:disabled { background: #D1D5DB; color: #9CA3AF; cursor: not-allowed; }
+        .sem-pontos-msg { font-size: .78rem; color: #B91C1C; text-align: center; margin-top: .4rem; }
+        .section-title { font-weight: 700; font-size: 1.1rem; border-left: 4px solid var(--cg);
+                         padding-left: .75rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="/"><i class="bi bi-recycle me-2"></i>Connect</a>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-muted d-none d-md-inline" style="font-size:.9rem">
+                <i class="bi bi-person-circle me-1 text-success"></i>
+                <span th:text="${usuarioLogado.nome}"></span>
+            </span>
+            <a href="/pontuacao" class="btn btn-sm btn-outline-success">
+                <i class="bi bi-trophy-fill me-1"></i>Pontuação
+            </a>
+            <a href="/reciclagem/registrar" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-qr-code-scan me-1"></i>Reciclar
+            </a>
+            <a href="/logout" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <a href="/" class="text-white opacity-75 text-decoration-none" style="font-size:.9rem">
+                <i class="bi bi-house me-1"></i>Início
+            </a>
+            <span class="text-white opacity-50">/</span>
+            <span class="text-white" style="font-size:.9rem">Recompensas</span>
+        </div>
+        <h1><i class="bi bi-gift-fill me-2"></i>Recompensas disponíveis</h1>
+        <p class="mb-2">Troque seus pontos por benefícios reais. Confira o que está disponível.</p>
+        <!-- RF10 – Regra 1: exibe o saldo atual para o usuário saber se tem pontos suficientes -->
+        <div class="saldo-chip">
+            <i class="bi bi-trophy-fill"></i>
+            Seu saldo: <strong th:text="${saldoAtual}"></strong> pts
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+
+    <div th:if="${sucesso}" class="alert alert-success d-flex align-items-center gap-2 mb-4">
+        <i class="bi bi-check-circle-fill fs-5"></i>
+        <span th:text="${sucesso}"></span>
+    </div>
+    <div th:if="${erro}" class="alert alert-danger d-flex align-items-center gap-2 mb-4">
+        <i class="bi bi-exclamation-circle-fill fs-5"></i>
+        <span th:text="${erro}"></span>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="section-title mb-0">Disponíveis para resgate</div>
+        <a href="/recompensas/meus-resgates" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-clock-history me-1"></i>Meus resgates
+        </a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(recompensas)}" class="text-center py-5 text-muted">
+        <i class="bi bi-gift fs-1 d-block mb-3 opacity-25"></i>
+        <p class="mb-0">Nenhuma recompensa disponível no momento.</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- RF10 – Regra 1: verifica se o usuário tem pontos suficientes para cada recompensa -->
+        <div class="col-sm-6 col-lg-4" th:each="r : ${recompensas}">
+            <div class="reward-card p-4 d-flex flex-column"
+                 th:classappend="${saldoAtual < r.pontosNecessarios} ? 'sem-pontos' : ''">
+
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <div class="reward-icon">
+                        <i class="bi bi-gift-fill"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold mb-1" style="font-size:1rem" th:text="${r.nome}"></h5>
+                        <span class="tipo-badge" th:if="${r.tipo != null}" th:text="${r.tipo}"></span>
+                    </div>
+                </div>
+
+                <p class="text-muted mb-3" style="font-size:.88rem; flex-grow:1"
+                   th:text="${r.descricao != null ? r.descricao : 'Sem descrição disponível.'}"></p>
+
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <!-- Pontos: badge vermelho se insuficiente, verde se suficiente -->
+                    <span class="pontos-badge"
+                          th:classappend="${saldoAtual < r.pontosNecessarios} ? ' insuficiente' : ''">
+                        <i class="bi bi-trophy-fill me-1"></i>
+                        <span th:text="${r.pontosNecessarios}"></span> pts
+                    </span>
+                    <span class="estoque-text" th:if="${r.estoque != null}">
+                        <i class="bi bi-box me-1"></i>
+                        <span th:text="${r.estoque}"></span> em estoque
+                    </span>
+                    <span class="estoque-text" th:if="${r.estoque == null}">
+                        <i class="bi bi-infinity me-1"></i> Ilimitado
+                    </span>
+                </div>
+
+                <!-- RF10 – Regra 1: desabilita botão se sem pontos ou sem estoque -->
+                <form th:action="@{/recompensas/resgatar/{id}(id=${r.idRecompensa})}" method="post">
+                    <button type="submit" class="btn-resgatar"
+                            th:disabled="${(r.estoque != null and r.estoque == 0) or (saldoAtual < r.pontosNecessarios)}">
+                        <i class="bi bi-bag-check-fill me-1"></i>
+                        <span th:text="${r.estoque != null and r.estoque == 0}
+                                       ? 'Esgotado'
+                                       : (saldoAtual < r.pontosNecessarios ? 'Pontos insuficientes' : 'Resgatar')"></span>
+                    </button>
+                </form>
+                <!-- Mensagem de pontos faltando -->
+                <p class="sem-pontos-msg"
+                   th:if="${saldoAtual < r.pontosNecessarios and (r.estoque == null or r.estoque > 0)}">
+                    Faltam <span th:text="${r.pontosNecessarios - saldoAtual}"></span> pts
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer class="border-top py-3 mt-4" style="background:#fff;">
+    <div class="container text-center text-muted" style="font-size:.85rem">
+        <i class="bi bi-recycle text-success me-1"></i> Connect © 2026 — Reciclagem com propósito.
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

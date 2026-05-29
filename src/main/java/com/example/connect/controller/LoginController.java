@@ -102,7 +102,7 @@ public class LoginController {
 
     private String redirecionarPorTipo(TipoUsuario tipo) {
         return switch (tipo) {
-            case ADMINISTRADOR -> "redirect:/admin/usuarios";
+            case ADMINISTRADOR -> "redirect:/admin/home";
             case CATADOR       -> "redirect:/home";
             case USUARIO       -> "redirect:/home";
         };

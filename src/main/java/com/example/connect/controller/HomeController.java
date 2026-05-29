@@ -34,4 +34,15 @@ public class HomeController {
         model.addAttribute("usuarioLogado", usuario);
         return "home";
     }
+
+    /** Regra de negócio: registro de reciclagem deve estar vinculado a usuário, ponto e catador. */
+    @GetMapping("/regras/registro-reciclagem")
+    public String regraRegistroReciclagem(HttpSession session, Model model) {
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("usuarioLogado", usuario);
+        return "regras/registro-reciclagem";
+    }
 }

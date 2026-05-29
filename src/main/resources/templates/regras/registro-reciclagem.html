@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regra de Registro - Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --cg: #00B26D; --cg-h: #00965C; --cg-l: #E6F7F0; --cd: #111827; --cm: #6B7280; }
+        body { font-family: 'Inter', sans-serif; background: #F9FAFB; color: var(--cd); }
+        .navbar { background: #fff; border-bottom: 1px solid #E5E7EB; padding: 1rem 0; }
+        .navbar-brand { font-weight: 800; color: var(--cg) !important; font-size: 1.3rem; }
+
+        .page-header {
+            background: linear-gradient(135deg, #064E3B 0%, #065F46 100%);
+            color: #fff; padding: 2.5rem 0 2rem;
+        }
+        .page-header h1 { font-weight: 800; font-size: 2rem; }
+        .rule-tag {
+            background: rgba(255,255,255,.18); border-radius: 999px;
+            padding: .25rem .9rem; font-size: .8rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: .4rem;
+        }
+
+        /* ── Cards principais ── */
+        .rule-card {
+            background: #fff; border: 1px solid #E5E7EB; border-radius: 16px;
+            padding: 2rem; margin-bottom: 1.5rem;
+        }
+        .rule-card h3 { font-weight: 700; font-size: 1.15rem; margin-bottom: 1rem; }
+
+        /* ── Entidades ── */
+        .entity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+        .entity-box {
+            border-radius: 14px; padding: 1.5rem;
+            display: flex; flex-direction: column; gap: .5rem;
+        }
+        .entity-box.usuario  { background: #EDE9FE; border: 1.5px solid #C4B5FD; }
+        .entity-box.ponto    { background: #DBEAFE; border: 1.5px solid #93C5FD; }
+        .entity-box.catador  { background: #D1FAE5; border: 1.5px solid #6EE7B7; }
+        .entity-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+        }
+        .usuario  .entity-icon { background: #7C3AED; color: #fff; }
+        .ponto    .entity-icon { background: #2563EB; color: #fff; }
+        .catador  .entity-icon { background: var(--cg); color: #fff; }
+        .entity-box h5 { font-weight: 700; font-size: .95rem; margin: 0; }
+        .entity-box p  { font-size: .83rem; color: #374151; margin: 0; }
+        .entity-fields { margin-top: .5rem; display: flex; flex-direction: column; gap: .25rem; }
+        .field-pill {
+            background: rgba(255,255,255,.7); border-radius: 6px;
+            padding: .2rem .6rem; font-size: .78rem; font-weight: 600;
+            display: flex; align-items: center; gap: .4rem;
+        }
+        .field-pill .fk-badge {
+            font-size: .65rem; font-weight: 700; background: #F59E0B;
+            color: #fff; border-radius: 4px; padding: 0 .3rem;
+        }
+
+        /* ── Fluxo ── */
+        .flow-step {
+            display: flex; align-items: flex-start; gap: 1rem;
+            padding: 1rem 0; border-bottom: 1px solid #F3F4F6;
+        }
+        .flow-step:last-child { border-bottom: none; }
+        .step-num {
+            width: 32px; height: 32px; border-radius: 999px;
+            background: var(--cg); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: .85rem; flex-shrink: 0; margin-top: .1rem;
+        }
+        .flow-step h6 { font-weight: 700; margin-bottom: .2rem; }
+        .flow-step p  { font-size: .88rem; color: var(--cm); margin: 0; }
+
+        /* ── Validações ── */
+        .validation-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .6rem; }
+        .validation-list li {
+            display: flex; align-items: flex-start; gap: .75rem;
+            background: #F9FAFB; border-radius: 10px; padding: .75rem 1rem;
+            font-size: .88rem;
+        }
+        .validation-list li .vi { color: var(--cg); font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+        .validation-list li .ve { color: #DC2626; font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+
+        /* ── SQL snippet ── */
+        .sql-block {
+            background: #1F2937; color: #D1FAE5; border-radius: 12px;
+            padding: 1.25rem 1.5rem; font-family: 'Courier New', monospace;
+            font-size: .83rem; line-height: 1.7; overflow-x: auto;
+        }
+        .sql-kw   { color: #60A5FA; font-weight: 700; }
+        .sql-str  { color: #FCD34D; }
+        .sql-cmt  { color: #6B7280; font-style: italic; }
+        .sql-fk   { color: #F9A8D4; }
+
+        .alert-rule {
+            background: #FEF9C3; border: 1.5px solid #FDE047;
+            border-radius: 12px; padding: 1rem 1.25rem;
+            display: flex; align-items: flex-start; gap: .75rem;
+            font-size: .9rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="/home"><i class="bi bi-recycle me-2"></i>Connect</a>
+        <div class="d-flex align-items-center gap-2">
+            <a href="/home" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-house me-1"></i>Início
+            </a>
+            <a href="/logout" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="/home" class="text-white opacity-75 text-decoration-none" style="font-size:.9rem">
+                <i class="bi bi-house me-1"></i>Início
+            </a>
+            <span class="text-white opacity-50">/</span>
+            <span class="text-white" style="font-size:.9rem">Regras do sistema</span>
+        </div>
+        <div class="mb-2">
+            <span class="rule-tag"><i class="bi bi-journal-check"></i>Regra de Negócio</span>
+        </div>
+        <h1><i class="bi bi-link-45deg me-2"></i>Registro de Reciclagem</h1>
+        <p class="mb-0" style="opacity:.85">
+            Todo registro deve estar vinculado a um <strong>usuário</strong>,
+            um <strong>ponto de coleta</strong> e um <strong>catador</strong>.
+        </p>
+    </div>
+</div>
+
+<div class="container py-4">
+
+    <!-- ── Resumo da regra ── -->
+    <div class="alert-rule mb-4">
+        <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
+        <div>
+            <strong>Regra obrigatória:</strong> Nenhum registro de reciclagem pode ser criado sem que os três
+            vínculos abaixo estejam presentes e válidos no banco de dados. A ausência de qualquer um deles
+            impede o cadastro do registro e gera erro de validação.
+        </div>
+    </div>
+
+    <!-- ── As 3 entidades ── -->
+    <div class="rule-card">
+        <h3><i class="bi bi-diagram-3-fill me-2 text-success"></i>As três entidades obrigatórias</h3>
+        <div class="entity-grid">
+
+            <div class="entity-box usuario">
+                <div class="entity-icon"><i class="bi bi-person-fill"></i></div>
+                <h5>Usuário</h5>
+                <p>Quem gerou o material reciclável e realizou a entrega no ponto de coleta.</p>
+                <div class="entity-fields">
+                    <div class="field-pill"><span class="fk-badge">FK</span> id_usuario → tabela <em>usuario</em></div>
+                    <div class="field-pill"><i class="bi bi-check2 text-success"></i> Deve estar com status <strong>ATIVO</strong></div>
+                </div>
+            </div>
+
+            <div class="entity-box ponto">
+                <div class="entity-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                <h5>Ponto de Coleta</h5>
+                <p>Local físico onde o material foi entregue e onde a coleta ocorreu.</p>
+                <div class="entity-fields">
+                    <div class="field-pill"><span class="fk-badge">FK</span> id_ponto → tabela <em>ponto_coleta</em></div>
+                    <div class="field-pill"><i class="bi bi-check2 text-success"></i> Deve estar com status <strong>ATIVO</strong></div>
+                </div>
+            </div>
+
+            <div class="entity-box catador">
+                <div class="entity-icon"><i class="bi bi-person-badge-fill"></i></div>
+                <h5>Catador</h5>
+                <p>Profissional que recebeu o material e que poderá validar o registro.</p>
+                <div class="entity-fields">
+                    <div class="field-pill"><span class="fk-badge">FK</span> id_catador → tabela <em>usuario</em></div>
+                    <div class="field-pill"><i class="bi bi-check2 text-success"></i> Tipo deve ser <strong>CATADOR</strong></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Estrutura da tabela ── -->
+    <div class="rule-card">
+        <h3><i class="bi bi-table me-2 text-primary"></i>Estrutura da tabela <code>registro_reciclagem</code></h3>
+        <div class="sql-block">
+<span class="sql-kw">CREATE TABLE</span> registro_reciclagem (<br>
+&nbsp;&nbsp;id_registro      <span class="sql-kw">SERIAL PRIMARY KEY</span>,<br>
+&nbsp;&nbsp;<span class="sql-fk">id_usuario</span>       <span class="sql-kw">INTEGER NOT NULL</span>,  <span class="sql-cmt">-- FK obrigatória → usuario</span><br>
+&nbsp;&nbsp;<span class="sql-fk">id_ponto</span>         <span class="sql-kw">INTEGER NOT NULL</span>,  <span class="sql-cmt">-- FK obrigatória → ponto_coleta</span><br>
+&nbsp;&nbsp;<span class="sql-fk">id_catador</span>       <span class="sql-kw">INTEGER NOT NULL</span>,  <span class="sql-cmt">-- FK obrigatória → usuario (tipo CATADOR)</span><br>
+&nbsp;&nbsp;id_tipo_material  <span class="sql-kw">INTEGER NOT NULL</span>,<br>
+&nbsp;&nbsp;quantidade        <span class="sql-kw">NUMERIC(10,2) NOT NULL</span>,<br>
+&nbsp;&nbsp;data_registro     <span class="sql-kw">TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP</span>,<br>
+&nbsp;&nbsp;qr_code           <span class="sql-kw">VARCHAR(255) NOT NULL UNIQUE</span>,<br>
+&nbsp;&nbsp;status            status_reciclagem <span class="sql-kw">NOT NULL DEFAULT</span> <span class="sql-str">'PENDENTE'</span>,<br>
+&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;<span class="sql-kw">CONSTRAINT</span> fk_usuario_registro  <span class="sql-kw">FOREIGN KEY</span> (<span class="sql-fk">id_usuario</span>) <span class="sql-kw">REFERENCES</span> usuario(id_usuario),<br>
+&nbsp;&nbsp;<span class="sql-kw">CONSTRAINT</span> fk_ponto_registro    <span class="sql-kw">FOREIGN KEY</span> (<span class="sql-fk">id_ponto</span>)   <span class="sql-kw">REFERENCES</span> ponto_coleta(id_ponto),<br>
+&nbsp;&nbsp;<span class="sql-kw">CONSTRAINT</span> fk_catador_registro  <span class="sql-kw">FOREIGN KEY</span> (<span class="sql-fk">id_catador</span>) <span class="sql-kw">REFERENCES</span> usuario(id_usuario)<br>
+);
+        </div>
+        <p class="text-muted mt-2 mb-0" style="font-size:.83rem">
+            <i class="bi bi-info-circle me-1"></i>
+            As três colunas marcadas em rosa são <strong>NOT NULL</strong> com <strong>FOREIGN KEY</strong> no banco,
+            ou seja, o próprio banco de dados rejeita qualquer INSERT que omita ou forneça um valor inexistente para qualquer uma delas.
+        </p>
+    </div>
+
+    <!-- ── Fluxo de criação ── -->
+    <div class="rule-card">
+        <h3><i class="bi bi-arrow-right-circle-fill me-2 text-success"></i>Fluxo de criação do registro</h3>
+
+        <div class="flow-step">
+            <div class="step-num">1</div>
+            <div>
+                <h6>Usuário inicia o registro</h6>
+                <p>O usuário logado acessa "Registrar reciclagem" e informa a quantidade e o tipo de material.</p>
+            </div>
+        </div>
+        <div class="flow-step">
+            <div class="step-num">2</div>
+            <div>
+                <h6>Sistema vincula o ponto de coleta</h6>
+                <p>O ponto de coleta é selecionado pelo usuário a partir dos pontos com status ATIVO disponíveis no sistema.</p>
+            </div>
+        </div>
+        <div class="flow-step">
+            <div class="step-num">3</div>
+            <div>
+                <h6>Sistema vincula o catador</h6>
+                <p>O catador presente no ponto é associado ao registro no momento da criação.</p>
+            </div>
+        </div>
+        <div class="flow-step">
+            <div class="step-num">4</div>
+            <div>
+                <h6>QR Code é gerado</h6>
+                <p>Um código único é gerado para o registro, permitindo que o catador faça a validação posteriormente.</p>
+            </div>
+        </div>
+        <div class="flow-step">
+            <div class="step-num">5</div>
+            <div>
+                <h6>Catador valida o registro</h6>
+                <p>O catador confirma a entrega via painel. A trigger do banco credita os pontos automaticamente ao usuário.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── O que é validado ── -->
+    <div class="rule-card">
+        <h3><i class="bi bi-shield-check-fill me-2 text-warning"></i>Validações aplicadas</h3>
+        <ul class="validation-list">
+            <li>
+                <i class="bi bi-check-circle-fill vi"></i>
+                <div><strong>id_usuario obrigatório e existente</strong> — o usuário deve estar cadastrado e com status ATIVO.</div>
+            </li>
+            <li>
+                <i class="bi bi-check-circle-fill vi"></i>
+                <div><strong>id_ponto obrigatório e existente</strong> — o ponto de coleta deve estar cadastrado e com status ATIVO.</div>
+            </li>
+            <li>
+                <i class="bi bi-check-circle-fill vi"></i>
+                <div><strong>id_catador obrigatório e do tipo CATADOR</strong> — deve ser um usuário com tipo CATADOR vinculado ao sistema.</div>
+            </li>
+            <li>
+                <i class="bi bi-check-circle-fill vi"></i>
+                <div><strong>Quantidade maior que zero</strong> — a constraint CHECK <code>quantidade &gt; 0</code> é aplicada no banco.</div>
+            </li>
+            <li>
+                <i class="bi bi-x-circle-fill ve"></i>
+                <div><strong>Sem usuário → registro rejeitado</strong> — o banco lança erro de violação de FK.</div>
+            </li>
+            <li>
+                <i class="bi bi-x-circle-fill ve"></i>
+                <div><strong>Sem ponto → registro rejeitado</strong> — o banco lança erro de violação de FK.</div>
+            </li>
+            <li>
+                <i class="bi bi-x-circle-fill ve"></i>
+                <div><strong>Sem catador → registro rejeitado</strong> — o banco lança erro de violação de FK.</div>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+<footer class="border-top py-3 mt-4" style="background:#fff;">
+    <div class="container text-center text-muted" style="font-size:.85rem">
+        <i class="bi bi-recycle text-success me-1"></i> Connect © 2026 — Reciclagem com propósito.
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
