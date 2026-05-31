@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - Connect Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cg: #00B26D; --cg-h: #00965C; --cg-l: #E6F7F0;
+            --cd: #111827; --cm: #6B7280;
+            --admin: #7C3AED; --admin-l: #EDE9FE;
+        }
+        body { font-family: 'Inter', sans-serif; background: #F3F4F6; color: var(--cd); margin: 0; }
+
+        /* Navbar */
+        .navbar { background: #1F2937; padding: 1rem 0; }
+        .navbar-brand { font-weight: 800; font-size: 1.25rem; color: #fff !important; }
+        .navbar-brand span { color: var(--cg); }
+        .nav-btn { font-size: .85rem; font-weight: 600; border-radius: 8px;
+                   padding: .4rem 1rem; border: none; cursor: pointer; text-decoration: none;
+                   display: inline-flex; align-items: center; gap: .4rem; }
+        .nav-btn-ghost { background: rgba(255,255,255,.08); color: #D1D5DB; }
+        .nav-btn-ghost:hover { background: rgba(255,255,255,.16); color: #fff; }
+        .nav-btn-danger { background: transparent; color: #F87171; border: 1px solid #374151; }
+        .nav-btn-danger:hover { background: #7F1D1D22; color: #FCA5A5; }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+            color: #fff; padding: 2rem 0 1.75rem;
+        }
+        .page-header h1 { font-weight: 800; font-size: 1.8rem; margin: 0; }
+        .page-header p  { color: #9CA3AF; font-size: .9rem; margin: .3rem 0 0; }
+
+        /* Level badge */
+        .nivel-badge {
+            background: var(--admin); color: #fff;
+            border-radius: 999px; padding: .2rem .85rem;
+            font-size: .75rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: .35rem;
+        }
+
+        /* Filtros */
+        .filter-card {
+            background: #fff; border: 1px solid #E5E7EB; border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+        }
+        .filter-card label { font-size: .8rem; font-weight: 600; color: var(--cm); }
+        .form-control, .form-select {
+            border-radius: 8px; border: 1px solid #D1D5DB;
+            font-size: .875rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--cg); box-shadow: 0 0 0 3px rgba(0,178,109,.15);
+        }
+
+        /* Botões */
+        .btn-primary-cg {
+            background: var(--cg); color: #fff; border: none;
+            border-radius: 8px; font-weight: 600; font-size: .875rem;
+            padding: .5rem 1.1rem; display: inline-flex; align-items: center; gap: .4rem;
+        }
+        .btn-primary-cg:hover { background: var(--cg-h); color: #fff; }
+        .btn-outline-cg {
+            background: transparent; color: var(--cg);
+            border: 1.5px solid var(--cg); border-radius: 8px;
+            font-weight: 600; font-size: .875rem;
+            padding: .5rem 1.1rem; display: inline-flex; align-items: center; gap: .4rem;
+        }
+        .btn-outline-cg:hover { background: var(--cg-l); }
+        .btn-admin {
+            background: var(--admin); color: #fff; border: none;
+            border-radius: 8px; font-weight: 600; font-size: .875rem;
+            padding: .5rem 1.1rem; display: inline-flex; align-items: center; gap: .4rem;
+            text-decoration: none;
+        }
+        .btn-admin:hover { background: #6D28D9; color: #fff; }
+
+        /* Tabela */
+        .table-card {
+            background: #fff; border: 1px solid #E5E7EB;
+            border-radius: 14px; overflow: hidden;
+        }
+        .table-card table { margin: 0; }
+        .table thead th {
+            background: #F9FAFB; font-size: .75rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .05em; color: var(--cm);
+            border-bottom: 1px solid #E5E7EB; padding: .85rem 1rem;
+        }
+        .table tbody td { padding: .85rem 1rem; vertical-align: middle; font-size: .875rem; }
+        .table tbody tr:hover { background: #F9FAFB; }
+
+        /* Tipo badge */
+        .badge-tipo {
+            display: inline-block; border-radius: 6px;
+            padding: .25rem .65rem; font-size: .75rem; font-weight: 700;
+        }
+        .badge-reciclagem { background: var(--cg-l); color: var(--cg-h); }
+        .badge-pontuacao  { background: #FEF3C7; color: #92400E; }
+        .badge-usuarios   { background: var(--admin-l); color: var(--admin); }
+        .badge-outros     { background: #F3F4F6; color: #374151; }
+
+        /* Empty */
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--cm); }
+        .empty-state i { font-size: 2.5rem; opacity: .4; }
+        .empty-state p { margin: .75rem 0 0; font-size: .9rem; }
+
+        /* Alertas */
+        .alert { border-radius: 10px; font-size: .875rem; }
+    </style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand" href="/admin/home">Connect<span>.</span></a>
+        <div class="d-flex gap-2 align-items-center">
+            <span class="nivel-badge">
+                <i class="bi bi-shield-fill"></i>
+                Nível <span th:text="${admin.nivelAcesso}">?</span>
+            </span>
+            <a href="/admin/home" class="nav-btn nav-btn-ghost">
+                <i class="bi bi-house"></i> Painel
+            </a>
+            <a href="/logout" class="nav-btn nav-btn-danger">
+                <i class="bi bi-box-arrow-right"></i> Sair
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ── Header ── -->
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-file-earmark-bar-graph me-2"></i>Relatórios</h1>
+        <p>Geração e consulta de relatórios por período &bull; Usuário:
+            <strong th:text="${usuarioLogado.nome}">Admin</strong>
+        </p>
+    </div>
+</div>
+
+<!-- ── Conteúdo ── -->
+<div class="container py-4">
+
+    <!-- Alertas de flash -->
+    <div th:if="${sucesso}" class="alert alert-success d-flex align-items-center gap-2" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${sucesso}"></span>
+    </div>
+    <div th:if="${erro}" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${erro}"></span>
+    </div>
+
+    <!-- Ações superiores -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="text-muted mb-0" style="font-size:.8rem; text-transform:uppercase; letter-spacing:.05em;">
+            <i class="bi bi-list-ul me-1"></i> Histórico de relatórios
+        </h6>
+        <!-- RF11-3: botão visível apenas para nível >= 2 -->
+        <a th:if="${admin.nivelAcesso >= 2}"
+           href="/admin/relatorios/gerar" class="btn-admin">
+            <i class="bi bi-plus-circle"></i> Gerar Relatório
+        </a>
+    </div>
+
+    <!-- ── Filtros RF11-1 ── -->
+    <div class="filter-card mb-4">
+        <form method="get" action="/admin/relatorios" class="row g-2 align-items-end">
+            <div class="col-12 col-md-3">
+                <label for="tipo">Tipo</label>
+                <select id="tipo" name="tipo" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="RECICLAGEM"  th:selected="${filtroTipo == 'RECICLAGEM'}">Reciclagem</option>
+                    <option value="PONTUACAO"   th:selected="${filtroTipo == 'PONTUACAO'}">Pontuação</option>
+                    <option value="USUARIOS"    th:selected="${filtroTipo == 'USUARIOS'}">Usuários</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-3">
+                <label for="dataInicio">Data início</label>
+                <input id="dataInicio" type="date" name="dataInicio" class="form-control"
+                       th:value="${filtroInicio}">
+            </div>
+            <div class="col-12 col-md-3">
+                <label for="dataFim">Data fim</label>
+                <input id="dataFim" type="date" name="dataFim" class="form-control"
+                       th:value="${filtroFim}">
+            </div>
+            <div class="col-12 col-md-3 d-flex gap-2">
+                <button type="submit" class="btn-primary-cg w-100">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+                <a href="/admin/relatorios" class="btn-outline-cg w-100" style="justify-content:center;">
+                    <i class="bi bi-x"></i> Limpar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── Tabela de relatórios ── -->
+    <div class="table-card">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tipo</th>
+                    <th>Período</th>
+                    <th>Total Reciclado (kg)</th>
+                    <th>Gerado por</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${relatorios}">
+                    <td class="text-muted" th:text="${r.idRelatorio}"></td>
+                    <td>
+                        <span class="badge-tipo"
+                              th:classappend="${r.tipo == 'RECICLAGEM' ? 'badge-reciclagem' :
+                                               r.tipo == 'PONTUACAO'  ? 'badge-pontuacao'  :
+                                               r.tipo == 'USUARIOS'   ? 'badge-usuarios'   :
+                                               'badge-outros'}"
+                              th:text="${r.tipo}">
+                        </span>
+                    </td>
+                    <td>
+                        <span th:text="${#temporals.format(r.dataInicio, 'dd/MM/yyyy')}"></span>
+                        &rarr;
+                        <span th:text="${#temporals.format(r.dataFim, 'dd/MM/yyyy')}"></span>
+                    </td>
+                    <td>
+                        <strong th:text="${#numbers.formatDecimal(r.totalReciclado, 1, 2)}"></strong>
+                    </td>
+                    <td th:text="${r.administrador.usuario.nome}"></td>
+                    <td>
+                        <a th:href="@{/admin/relatorios/{id}(id=${r.idRelatorio})}"
+                           class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <!-- RF11-3: excluir apenas para nível >= 3 -->
+                        <form th:if="${admin.nivelAcesso >= 3}"
+                              th:action="@{/admin/relatorios/{id}/excluir(id=${r.idRelatorio})}"
+                              method="post" style="display:inline;"
+                              onsubmit="return confirm('Excluir relatório #' + /*[[${r.idRelatorio}]]*/ '?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <!-- Estado vazio -->
+                <tr th:if="${#lists.isEmpty(relatorios)}">
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <i class="bi bi-file-earmark-x"></i>
+                            <p>Nenhum relatório encontrado para os filtros aplicados.</p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

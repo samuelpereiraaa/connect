@@ -81,6 +81,7 @@
         .mod-resgates  { --icon-bg: var(--cg-l); --icon-color: var(--cg); }
         .mod-pontos    { --icon-bg: #DBEAFE; --icon-color: #2563EB; }
         .mod-regra     { --icon-bg: #F0FDF4; --icon-color: #16A34A; }
+        .mod-relatorio { --icon-bg: #FEE2E2; --icon-color: #DC2626; }
     </style>
 </head>
 <body>
@@ -150,6 +151,30 @@
                 <h5>Pontos de Coleta</h5>
                 <p>Gerencie os pontos de coleta parceiros, materiais aceitos e horários.</p>
                 <div class="card-arrow">Acessar <i class="bi bi-arrow-right"></i></div>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- RF11 – Relatórios -->
+    <p class="section-title">Relatórios</p>
+    <div class="row g-3 mb-4">
+
+        <div class="col-sm-6 col-lg-4">
+            <a href="/admin/relatorios" class="access-card mod-relatorio">
+                <div class="card-icon"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
+                <h5>Relatórios por Período</h5>
+                <p>Consulte relatórios gerados, filtre por tipo e período e visualize o total reciclado.</p>
+                <div class="card-arrow">Acessar <i class="bi bi-arrow-right"></i></div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-lg-4">
+            <a href="/admin/relatorios/gerar" class="access-card mod-relatorio">
+                <div class="card-icon"><i class="bi bi-plus-circle-fill"></i></div>
+                <h5>Gerar Relatório</h5>
+                <p>Defina tipo e período para gerar um novo relatório consolidado de reciclagem.</p>
+                <div class="card-arrow">Gerar <i class="bi bi-arrow-right"></i></div>
             </a>
         </div>
 

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Relatório - Connect Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cg: #00B26D; --cg-h: #00965C; --cg-l: #E6F7F0;
+            --cd: #111827; --cm: #6B7280;
+            --admin: #7C3AED; --admin-l: #EDE9FE;
+        }
+        body { font-family: 'Inter', sans-serif; background: #F3F4F6; color: var(--cd); margin: 0; }
+
+        .navbar { background: #1F2937; padding: 1rem 0; }
+        .navbar-brand { font-weight: 800; font-size: 1.25rem; color: #fff !important; }
+        .navbar-brand span { color: var(--cg); }
+        .nav-btn { font-size: .85rem; font-weight: 600; border-radius: 8px;
+                   padding: .4rem 1rem; border: none; cursor: pointer; text-decoration: none;
+                   display: inline-flex; align-items: center; gap: .4rem; }
+        .nav-btn-ghost { background: rgba(255,255,255,.08); color: #D1D5DB; }
+        .nav-btn-ghost:hover { background: rgba(255,255,255,.16); color: #fff; }
+
+        .page-header {
+            background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+            color: #fff; padding: 2rem 0 1.75rem;
+        }
+        .page-header h1 { font-weight: 800; font-size: 1.8rem; margin: 0; }
+        .page-header p  { color: #9CA3AF; font-size: .9rem; margin: .3rem 0 0; }
+
+        .form-card {
+            background: #fff; border: 1px solid #E5E7EB; border-radius: 16px;
+            padding: 2rem; max-width: 640px; margin: 2rem auto;
+        }
+        .form-label { font-size: .8rem; font-weight: 600; color: var(--cm); }
+        .form-control, .form-select {
+            border-radius: 8px; border: 1px solid #D1D5DB; font-size: .875rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--cg); box-shadow: 0 0 0 3px rgba(0,178,109,.15);
+        }
+        .btn-gerar {
+            background: var(--cg); color: #fff; border: none;
+            border-radius: 10px; font-weight: 700; font-size: .95rem;
+            padding: .65rem 1.5rem; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: .5rem;
+        }
+        .btn-gerar:hover { background: var(--cg-h); }
+        .btn-voltar {
+            background: transparent; color: var(--cm); border: 1.5px solid #D1D5DB;
+            border-radius: 10px; font-weight: 600; font-size: .875rem;
+            padding: .6rem 1.2rem; text-decoration: none;
+            display: inline-flex; align-items: center; gap: .4rem;
+        }
+        .btn-voltar:hover { border-color: #9CA3AF; color: var(--cd); }
+
+        .nivel-info {
+            background: var(--admin-l); border-radius: 10px; padding: .85rem 1rem;
+            font-size: .82rem; color: var(--admin); font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand" href="/admin/home">Connect<span>.</span></a>
+        <a href="/admin/relatorios" class="nav-btn nav-btn-ghost">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-plus-circle me-2"></i>Gerar Relatório</h1>
+        <p>Geração de relatório por período</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="form-card">
+
+        <!-- Info de nível de acesso (RF11-3) -->
+        <div class="nivel-info mb-4">
+            <i class="bi bi-shield-check me-1"></i>
+            Seu nível de acesso: <strong th:text="${admin.nivelAcesso}">?</strong>
+            &bull; Nível mínimo para gerar relatórios: <strong>2</strong>
+        </div>
+
+        <h5 class="fw-700 mb-4" style="font-weight:700;">Configurar Relatório</h5>
+
+        <form method="post" action="/admin/relatorios/gerar">
+
+            <!-- Tipo -->
+            <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo de Relatório *</label>
+                <select id="tipo" name="tipo" class="form-select" required>
+                    <option value="">Selecione...</option>
+                    <option value="RECICLAGEM">Reciclagem</option>
+                    <option value="PONTUACAO">Pontuação</option>
+                    <option value="USUARIOS">Usuários</option>
+                </select>
+                <div class="form-text">Define o escopo dos dados consolidados no relatório.</div>
+            </div>
+
+            <!-- Período (RF11-1) -->
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label for="dataInicio" class="form-label">Data Início *</label>
+                    <input id="dataInicio" type="date" name="dataInicio" class="form-control"
+                           required th:max="${hoje}">
+                </div>
+                <div class="col-6">
+                    <label for="dataFim" class="form-label">Data Fim *</label>
+                    <input id="dataFim" type="date" name="dataFim" class="form-control"
+                           required th:max="${hoje}">
+                </div>
+                <div class="col-12">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        O total reciclado será calculado com base nos registros validados no período.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Botões -->
+            <div class="d-flex gap-2">
+                <a href="/admin/relatorios" class="btn-voltar">
+                    <i class="bi bi-x"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-gerar">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Gerar Relatório
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Garante que dataFim >= dataInicio
+    document.getElementById('dataInicio').addEventListener('change', function () {
+        const fim = document.getElementById('dataFim');
+        if (fim.value && fim.value < this.value) fim.value = this.value;
+        fim.min = this.value;
+    });
+</script>
+</body>
+</html>
