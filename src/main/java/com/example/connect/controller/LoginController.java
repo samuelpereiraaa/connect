@@ -17,9 +17,9 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  * RF03 – Autenticação de usuários.
- * Regra 1: valida e-mail e senha.
- * Regra 2: redireciona conforme tipo de usuário.
- * Regra 3: em caso de erro apresenta mensagem.
+ * Regra 1: bloqueia conta após 5 tentativas inválidas por 15 minutos.
+ * Regra 2: senha validada com BCrypt.
+ * Regra 3: mensagens de erro descritivas.
  */
 @Controller
 public class LoginController {
@@ -30,7 +30,6 @@ public class LoginController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    /** RF03 – Exibe a tela de login */
     @GetMapping("/login")
     public String telaLogin(
             @RequestParam(required = false) String erro,
@@ -38,19 +37,19 @@ public class LoginController {
             HttpSession session,
             Model model) {
 
-        // Se já está logado, redireciona direto
         Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
         if (logado != null) {
             return redirecionarPorTipo(logado.getTipo());
         }
 
-        // RF03 Regra 3 – traduz o código de erro em mensagem legível
         if (erro != null) {
             String textoErro = switch (erro) {
                 case "email_nao_encontrado" -> "E-mail não encontrado. Verifique e tente novamente.";
                 case "senha_incorreta"      -> "Senha incorreta. Verifique e tente novamente.";
                 case "usuario_inativo"      -> "Sua conta está inativa. Entre em contato com o suporte.";
                 case "usuario_suspenso"     -> "Sua conta está suspensa. Entre em contato com o suporte.";
+                // RF03 Regra 1 – mensagem de bloqueio temporário
+                case "conta_bloqueada"      -> "Conta bloqueada temporariamente por excesso de tentativas. Tente novamente em 15 minutos.";
                 default                    -> "Credenciais inválidas. Tente novamente.";
             };
             model.addAttribute("erro", textoErro);
@@ -63,37 +62,33 @@ public class LoginController {
         return "login";
     }
 
-    /** RF03 – Processa o formulário de login */
     @PostMapping("/login")
     public String login(
             @RequestParam String email,
             @RequestParam String senha,
             HttpSession session) {
 
-        // RF03 Regra 1 – valida e-mail e senha
         ResultadoLogin resultado = service.autenticar(email, senha);
 
-        // RF03 Regra 3 – em caso de erro redireciona com código
         if (resultado != ResultadoLogin.SUCESSO) {
             String codigoErro = switch (resultado) {
                 case EMAIL_NAO_ENCONTRADO -> "email_nao_encontrado";
                 case SENHA_INCORRETA      -> "senha_incorreta";
                 case USUARIO_INATIVO      -> "usuario_inativo";
                 case USUARIO_SUSPENSO     -> "usuario_suspenso";
+                // RF03 Regra 1
+                case CONTA_BLOQUEADA      -> "conta_bloqueada";
                 default                  -> "credenciais_invalidas";
             };
             return "redirect:/login?erro=" + codigoErro;
         }
 
-        // RF03 Regra 2 – armazena usuário na sessão
         Usuario usuario = usuarioRepository.findByEmail(email);
         session.setAttribute("usuarioLogado", usuario);
 
-        // RF03 Regra 2 – redireciona conforme tipo
         return redirecionarPorTipo(usuario.getTipo());
     }
 
-    /** GET /logout – encerra a sessão */
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
